@@ -1,0 +1,40 @@
+{% extends 'base.html' %} 
+{% block content %} 
+
+{% url 'gossips:gossip_add_comment' as gossip_comment_form %}
+{% url 'gossips:gossip_reaction' as reaction_url %}
+
+<section class="ml-3">
+   {% include 'detail.html' with post=gossip comment_form_url=gossip_comment_form reaction_url=reaction_url hidden_id='gossip' %}
+</section>
+
+{% endblock content %}
+
+{% block title %} {{gossip.title}} {% endblock title %}
+<section>
+   {% block navigation %} {% include 'navigation.html' %} {% endblock navigation %}
+</section>
+
+
+<section>
+   {% block aside %} {% include 'aside.html' %} {% endblock aside %}
+</section>
+
+{% block customJs %}
+<script>
+   function reactionFunction(id, action) {
+   var id = id;
+   var action = action;
+   var boldAction = "<strong class='text-uppercase'>"+ action +"</strong>"
+   var message = 'You are about to vote "'+ boldAction +'" for this post'
+
+   $("#gossip_id").val(id)
+   $("#action").val(action)
+
+   $(".appendReaction").remove()
+   $("<p class='appendReaction'>" + message + "</p>").insertAfter('#reactionSection');
+
+}
+</script>
+{% include 'social_share.html' %}
+{% endblock %}

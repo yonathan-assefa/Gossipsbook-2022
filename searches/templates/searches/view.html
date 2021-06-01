@@ -1,0 +1,758 @@
+{% extends 'base.html' %}
+{% load humanize %} 
+{% load static %} 
+
+{% block content %}
+
+{% if query %}
+<section>
+	<p class="container">Search Results For: "<strong>{{query}}</strong>"</p>
+	
+	{% for gossip in gossips %}
+		<div class="card mb-4">
+		    <div class="card-body">
+		        <h6 class="card-title">
+		            <div class="mb-3 row ml-1">
+		                <div>
+							{% if gossip.author.profile.image %}
+		                   <img class="img-fluid rounded-circle" src="{{gossip.author.profile.image.url}}" alt="{{gossip.author.username}} image" style="width: 35px; height: 35px;">
+							{% else %}
+						   <img class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{gossip.author.username}} image" style="width: 35px; height: 35px;">
+							{% endif %}
+						</div>
+		          
+		                <div class="col-8">
+		                   <strong><a href="{% url 'users:user_view_profile' gossip.author.username %}" class="text-dark">{{gossip.author.username}}</a> 
+		                   </strong>
+
+		                   <small class="text-muted ml-1">{{gossip.date_published|naturaltime}}</small>
+
+		                   {% if gossip.author.profile.designation %}
+		                    <div class="text-muted mt-2 mr-3">
+		                        {{gossip.author.profile.designation}}
+		                    </div>
+		                    {% endif %}
+
+		                </div>
+		            </div>
+		         
+		            <div class="row">
+		                <div class="col">
+
+		                </div>
+
+		                <div class="col">
+		                    <div class="progress">
+		                        <div class="true_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{gossip.percent_true}}%" aria-valuenow="{{gossip.percent_true}}" aria-valuemin="0" aria-valuemax="100">{{gossip.percent_true | floatformat:1}}%</div>
+		                        <div class="false_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{gossip.percent_false}}%" aria-valuenow="{{gossip.percent_false}}" aria-valuemin="0" aria-valuemax="100">{{gossip.percent_false | floatformat:1}}%</div>
+		                    </div>
+		                    <div class="text-right">{{gossip.get_total_voters}} person{{gossip.get_total_voters|pluralize}} voted</div>
+		                </div>
+		            </div>
+
+
+		        </h6>
+		        <a href="{% url 'gossips:gossip_detail' gossip.slug %}" class="text-dark">
+		            <h6>
+		                {% if gossip.from_question_user %}
+		                <small>question by: {{gossip.from_question_user}} - </small>
+		                {% endif %}
+		             <strong>{{gossip.title|truncatewords:30}}</strong> 
+		            </h6>
+
+
+		            <p> 
+		                {% if gossip.from_question_answer_provider %}
+		                <small>{{gossip.from_question_answer_provider}} answered: </small> 
+		                {% endif %}
+		                {{gossip.content | linebreaks | truncatewords:155}}
+		            </p>
+		        </a>
+		    </div>
+
+		    {% if gossip.image %}
+		    <img class="card-img-bottom" style="max-height:420px;" src="{{gossip.image.url}}" alt="{{gossip.title}} image">
+		    {% endif %}
+
+		    <div class="row">
+		        <div class="col m-2 ml-5 d-inline">
+		            <div class="row d-inline">
+		                <form class="d-inline">
+		                        {% if user in gossip.true.all or user in gossip.false.all %}
+		                        <button type="button" class="true_reaction_button btn btn-sm disabled">
+		                            <i class="fa fa-check"></i> True
+		                        </button> 
+		                        {% else %}
+		                        <button type="button"
+		                            data-toggle="modal" 
+		                            data-id="{{gossip.id}}" 
+		                            data-action="true" 
+		                            data-target="#gossipsreactionModal" 
+		                            onclick="reactionFunction('{{gossip.id}}', 'true')"  
+		                            class="true_reaction_button reaction btn btn-sm btn-primary"> 
+		                            <i class="fa fa-check"></i> 
+		                            True
+		                        </button> 
+		                        {% endif %}
+		                </form>
+
+		                <form class="d-inline">
+		                    {% if user in gossip.false.all or user in gossip.true.all %}
+		                    <button type="button" class="false_reaction_button btn btn-sm disabled">
+		                            <i class="fa fa-times"></i> False
+		                        </button> 
+		                    {% else %}
+		                    <button type="button" 
+		                        data-toggle="modal" 
+		                        data-id="{{gossip.id}}" 
+		                        data-action="false" 
+		                        data-target="#gossipsreactionModal"
+		                        onclick="reactionFunction('{{gossip.id}}', 'false')" 
+		                        class="false_reaction_button reaction btn btn-sm btn-danger"> 
+		                        <i class="fa fa-times"></i> 
+		                        False
+		                    </button> 
+		                    {% endif %}
+		                </form>
+		            </div>
+
+		            {% if user in gossip.true.all %}
+		            <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+		               <small>You voted true</small> 
+		            </div>
+		            {% elif user in gossip.false.all %}
+		            <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+		                <small>You voted false</small>
+		            </div>
+		            {% endif %}
+		        </div>
+		        {% static 'images/GossipsBook_logo.png' as post_image %}
+		        <div class="col m-2 p-1 d-inline text-right mr-4">
+		            <a href="#" 
+		                data-toggle="modal"
+		                {% if gossip.image %}
+		                onclick="sharePostFunc('{{gossip.title}}','{{gossip.get_absolute_url}}', '{{gossip.image.url}}')" 
+		                {% else %}
+		                onclick="sharePostFunc('{{gossip.title}}','{{gossip.get_absolute_url}}', '{{post_image}}')"
+		                {% endif %}
+		                data-target="#shareModal"  
+		                class="mr-3 share-button"> 
+		                <i class="fa fa-share-alt"></i> 
+		                <span class="d-none d-md-inline">Share</span> 
+		            </a>
+		            <a href="#" class="gossipscomment" data-toggle="modal" data-id="{{gossip.id}}" data-title="{{gossip.title}}" data-target="#gossipscommentModal">
+		                <i class="fa fa-comment"></i> <span class="d-none d-md-inline">Comment </span>  ({{gossip.get_total_comments.count}})
+		            </a>
+		        </div>
+		    </div>
+		</div>
+	{% empty %}
+		<p class="container"><strong>No results found for "{{query}}" in gossips section</strong></p>
+	{% endfor %}
+
+
+
+	<!-- CHEATERS SECTION -->
+	<hr>
+	<h4 class="container">Cheaters Section</h4>
+	<hr>
+
+
+
+	{% for cheater in cheaters %}
+	<div class="card mb-4">
+	    <div class="card-body">
+	        <h6 class="card-title">
+	            <div class="mb-3 row ml-1">
+	                <div>
+						{% if cheater.author.profile.image %}
+	                   <img class="img-fluid rounded-circle" src="{{cheater.author.profile.image.url}}" alt="{{cheater.author.username}} image" style="width: 35px; height: 35px;">
+						{% else %}
+					   <img class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{cheater.author.username}} image" style="width: 35px; height: 35px;">
+						{% endif %}
+					</div>
+	          
+	                <div class="col-8">
+	                   <strong><a href="{% url 'users:user_view_profile' cheater.author.username %}" class="text-dark">{{cheater.author.username}}</a>  </strong>
+	                   <small class="text-muted ml-1">{{cheater.date_published|naturaltime}}</small>
+	                   {% if cheater.author.profile.designation %}
+	                   <div class="text-muted mt-2 mr-3">
+	                       {{cheater.author.profile.designation}}
+	                   </div>
+	                   {% endif %}
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col">
+
+	                </div>
+
+	                <div class="col">
+	                    <div class="progress">
+	                        <div class="true_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{cheater.percent_true}}%" aria-valuenow="{{cheater.percent_true}}" aria-valuemin="0" aria-valuemax="100">{{cheater.percent_true| floatformat:1}}%</div>
+	                        <div class="false_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{cheater.percent_false}}%" aria-valuenow="{{cheater.percent_false}}" aria-valuemin="0" aria-valuemax="100">{{cheater.percent_false| floatformat:1}}%</div>
+	                    </div>
+	                    <div class="text-right">{{cheater.get_total_voters}} person{{cheater.get_total_voters|pluralize}} voted</div>
+	                </div>
+	            </div>
+
+
+	        </h6>
+	        <a href="{% url 'cheaters:cheater_detail' cheater.slug %}" class="text-dark">
+	            <span>
+	                <h6> 
+	                    {% if cheater.from_question_user %}
+	                        <small>question by: {{cheater.from_question_user}} - </small>
+	                    {% endif %}
+	                    <strong>{{cheater.title|truncatewords:30}}</strong> 
+	                </h6>
+	                <p class="card-text"> 
+	                    {% if cheater.from_question_answer_provider %}
+	                        <small>{{cheater.from_question_answer_provider}} answered: </small> 
+	                    {% endif %}
+	                {{cheater.content | linebreaks | truncatewords:155}} 
+	                </p>
+	            </span>
+	        </a> 
+	    </div>
+
+	    {% if cheater.image %}
+	    <img class="card-img-bottom" style="max-height:420px;" src="{{cheater.image.url}}" alt="{{cheater.title}}'s image"> 
+	    {% endif %}
+
+	    <div class="row">
+	        <div class="col m-2 ml-5 d-inline">
+	            <div class="row d-inline">
+	                <form class="d-inline">
+	                    {% if user in cheater.true.all or user in cheater.false.all %}
+	                    <button type="button" class="true_reaction_button btn btn-sm disabled">
+	                        <i class="fa fa-check"></i> True
+	                    </button> 
+	                    {% else %}
+	                    <button type="button"
+	                        data-toggle="modal" 
+	                        data-id="{{cheater.id}}" 
+	                        data-action="true" 
+	                        data-target="#cheaterreactionModal"
+	                        onclick="reactionFunction('{{cheater.id}}', 'true')"   
+	                        class="true_reaction_button reaction btn btn-sm btn-primary"> 
+	                        <i class="fa fa-check"></i> True
+	                    </button> 
+	                    {% endif %}
+	                </form>
+
+	                <form class="d-inline">
+	                    {% if user in cheater.false.all or user in cheater.true.all %}
+	                    <button type="button" class="false_reaction_button btn btn-sm disabled">
+	                        <i class="fa fa-times"></i> False
+	                    </button> 
+	                    {% else %}
+	                    <button type="button"
+	                        data-toggle="modal" 
+	                        data-id="{{cheater.id}}" 
+	                        data-action="false" 
+	                        data-target="#cheaterreactionModal"
+	                        onclick="reactionFunction('{{cheater.id}}', 'false')"   
+	                        class="false_reaction_button reaction btn btn-sm btn-danger"> 
+	                        <i class="fa fa-times"></i> False
+	                    </button> 
+	                    {% endif %}
+	                </form>
+	            </div>
+
+	            {% if user in cheater.true.all %}
+	            <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+	               <small>You voted true</small> 
+	            </div>
+	            {% elif user in cheater.false.all %}
+	            <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+	                <small>You voted false</small>
+	            </div>
+	            {% endif %}
+	        </div>
+
+	        {% static 'images/GossipsBook_logo.png' as post_image %}
+	        <div class="col m-2 p-1 d-inline text-right mr-4">
+	            <a href="#" 
+	                data-toggle="modal"
+	                {% if cheater.image %}
+	                onclick="sharePostFunc('{{cheater.title}}','{{cheater.get_absolute_url}}', '{{cheater.image.url}}')" 
+	                {% else %}
+	                onclick="sharePostFunc('{{cheater.title}}','{{cheater.get_absolute_url}}', '{{post_image}}')"
+	                {% endif %}
+	                data-target="#shareModal"  
+	                class="mr-3 share-button"> 
+	                <i class="fa fa-share-alt"></i> 
+	                <span class="d-none d-md-inline">Share</span> 
+	            </a>
+	            <a href="#" class="cheatercomment" data-toggle="modal" data-id="{{cheater.id}}" data-title="{{cheater.title}}" data-target="#cheatercommentModal">
+	                <i class="fa fa-comment"></i> <span class="d-none d-md-inline">Comment </span>  ({{cheater.get_total_comments.count}})
+	            </a>
+	        </div>
+	    </div>
+	</div>
+	{% empty %}
+	<p class="container"><strong>No results found for "{{query}}" in cheaters section</strong></p>
+	{% endfor %}
+
+
+
+	<hr>
+	<h4 class="container">Questions Section</h4>
+	<hr>
+	{% for question in questions %}
+	<div class="card mb-4">
+	    <div class="card-body">
+	        <div class="mb-3 row ml-1">
+	            <div>
+					{% if question.author.profile.image %}
+	               <img class="img-fluid rounded-circle" src="{{question.author.profile.image.url}}" alt="{{question.author.username}} image" style="width: 35px; height: 35px;">
+					{% else %}
+				   <img class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{question.author.username}} image" style="width: 35px; height: 35px;">
+					{% endif %}
+				</div>
+	      
+	            <div class="col-8">
+	               <strong><a href="{% url 'users:user_view_profile' question.author.username %}" class="text-dark">{{question.author.username}}</a>  </strong>
+	               <small class="text-muted ml-1">{{question.date_published|naturaltime}}</small>
+	               {% if question.author.profile.designation %}
+	               <div class="text-muted mt-2 mr-3">
+	                   {{question.author.profile.designation}}
+	               </div>
+	               {% endif %}
+	            </div>
+	        </div>
+	        <section class="text-left">
+	            <h5>
+	                <strong>
+	                    <a class="text-dark" href="{{question.get_absolute_url}}"> {{question.title|truncatewords:30}} </a>
+	                </strong>
+	            </h5>
+	        </section>
+	    </div>
+
+	    {% if question.image %}
+	    <img class="card-img-bottom" style="max-height:420px;" src="{{question.image.url}}" alt="{{question.title}} image"> 
+	    {% endif %}
+
+	    <div class="row">
+	        <div class="col-7 m-2">
+	            <button title="answer this questions" {% if user == question.author %} disabled {% endif %} class="btn btn-sm btn-primary answerQuestion" style="background-color: #FF9933; color: white; border-color: white;" data-toggle="modal" data-target="#answerQuestionModal"
+	                data-id="{{question.id}}" data-image="{{question.author.profile.image.url}}" data-username="{{question.author.username}}" data-title="{{question.title}}">
+	                    <i class="fa fa-edit"></i> 
+	                <span> Answer </span> ({{question.get_answers.count}})       
+	            </button> 
+	            {% if user in question.vote_down.all %}
+	            <button class="btn btn-sm btn-dark text-white disabled" data-toggle="modal" data-target="#opposeQuestionDoneModal"> 
+	                <i class="fa fa-thumbs-down"></i>
+	                <span class="d-none d-md-inline"> Oppose </span> ({{question.get_oppose_count}})
+	            </button> 
+	            
+	            {% else %}
+	            <button class="btn btn-sm btn-dark text-white opposeQuestion" title="oppose this answer" data-id="{{question.id}}" data-username="{{question.author.username}}" data-image="{{question.author.profile.image.url}}" data-title="{{question.title}}" data-toggle="modal"
+	                data-target="#opposeQuestionModal"> 
+	              <i class="fa fa-thumbs-down"></i>
+	              <span class="d-none d-md-inline"> Oppose </span> ({{question.get_oppose_count}})
+	            </button> 
+	            {% endif %}
+
+	        </div>
+
+	        {% static 'images/GossipsBook_logo.png' as post_image %}
+	        <div class="col-3 text-right pr-3 m-2">
+	            <a href="#" 
+	                data-toggle="modal"
+	                {% if question.image %}
+	                onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{question.image.url}}')" 
+	                {% else %}
+	                onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{post_image}}')"
+	                {% endif %}
+	                data-target="#shareModal"  
+	                class="mr-3 share-button"> 
+	                <i class="fa fa-share-alt"></i> 
+	                <span class="d-none d-md-inline">Share</span> 
+	            </a>
+	        </div>
+	    </div>
+	</div>
+	{% empty %}
+	<p class="container"><strong>No results found for "{{query}}" in questions section</strong></p>
+	{% endfor %}
+
+</section>
+
+{% else %}
+<p>
+	<form class="form-inline input-group" action="{% url 'searches:search' %}">
+	    <div class="input-group-prepend">
+	        <div class="input-group-text bg-white"><i class="fa fa-search"></i></div>
+	    </div>
+	    <input id="search_gossipsbook" name="q" class="form-control mr-sm-2" type="search" placeholder="Search GossipsBook..." aria-label="Search">
+	</form>
+</p>
+{% endif %}
+
+
+
+
+
+
+<!-- Gossips Reaction Modal -->
+<div class="modal fade" id="gossipsreactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-5 pt-3 container">
+                <div id="gossipToComment">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="container">
+                <p id="reactionSection"></p>
+                <p>
+                    <strong>Note that you CANNOT undo this action...</strong>
+                </p>
+            </div>
+            <form class="d-inline" action="{% url 'gossips:gossip_reaction' %}">
+                <input type="hidden" name="action" value="" id="action"> 
+                <input type="hidden" name="gossip_id" value="" id="gossip_id"> 
+               
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">No, Go Back</button>
+                    <button class="btn btn-outline-primary"><i class="fa fa-send"></i> Yes, continue </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Would you like to vote on this gossip? Please <a href="/accounts/login">login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End Gossips reaction Modal -->
+
+
+<!-- Cheater Reaction Modal -->
+<div class="modal fade" id="cheaterreactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-5 pt-3 container">
+                <div id="gossipToComment">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="container">
+                <p id="reactionSection"></p>
+                <p>
+                    <strong>Note that you CANNOT undo this action...</strong>
+                </p>
+            </div>
+            <form class="d-inline" action="{% url 'cheaters:cheater_reaction' %}">
+                <input type="hidden" name="action" value="" id="action"> 
+                <input type="hidden" name="cheater_id" value="" id="cheater_id"> 
+               
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">No, Go Back</button>
+                    <button class="btn btn-outline-primary"><i class="fa fa-send"></i> Yes, continue </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Would you like to vote on this cheater? Please <a href="/accounts/login">login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End cheater reaction Modal -->
+
+
+
+<!-- answer question Modal -->
+<div class="modal fade" id="answerQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-4 pt-3">
+                <span class="pr-3">
+                <div id="questionAuthorImage">
+
+                </div>
+            </span>
+                <span class="modal-title">
+                <div id="questionAnswerUsername">
+
+                </div>
+            </span>
+            </div>
+
+            <div class="row pl-5 pt-3 container">
+                <div id="questionToAnswer">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <form action="{% url 'answers:answers_new' %}" method="post">
+                {% csrf_token %}
+                <div class="row container mx-auto">
+                    <textarea class="form-control m-3 mt-2" name="answer_question" id="answerInput" cols="25" rows="5" placeholder="Your answer..."></textarea>
+                </div>
+
+                <input type="hidden" name="questionId" id="questionId">
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary"><i class="fa fa-send"></i> Answer </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Have an answer to this question? Please <a href="/accounts/login">login</a> to provide your answer
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End answer question Modal -->
+
+
+
+<!-- oppose question Modal -->
+<div class="modal fade" id="opposeQuestionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-4 pt-3">
+                <span class="pr-3">
+                  <div id="questionToOpposeAuthorImage">
+
+                  </div>
+                </span>
+                <span>
+                  <div id="questionAuthorUsername">
+
+                  </div>
+                </span>
+            </div>
+
+            <div class="row pl-5 pt-3 container">
+                <div id="questionToOppose">
+                </div>
+            </div>
+            <br> {% if user.is_authenticated %}
+            <form action="{% url 'questions:oppose_question' %}">
+                <div class="container mx-auto justify-content-center">
+                    <h6>Are you sure you want to oppose this question?</h6>
+                    <p>You CANNOT undo this action...</p>
+                </div>
+
+                <input type="hidden" name="opposeQuestionId" id="opposeQuestionId">
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go Back</button>
+                    <button class="btn btn-danger"><i class="fa fa-check-circle"></i> Yes, Oppose </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                You want to oppose this question? Please <a href="/accounts/login">login</a> to do so
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End oppose question Modal -->
+
+
+
+<!-- oppose question done Modal -->
+<div class="modal fade" id="opposeQuestionDoneModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="container justify-content-center">
+                <h5 class="text-danger">
+                    You have already opposed this question
+                </h5>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Okay</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End oppose question done Modal -->
+
+
+
+
+<!-- gossips comment Modal -->
+<div class="modal fade" id="gossipscommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-5 pt-3 container">
+                <div id="gossipToCommentjquery">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <form action="{% url 'gossips:gossip_add_comment' %}" method="post">
+                {% csrf_token %}
+                <div class="row container mx-auto">
+                    <textarea required class="form-control m-3 mt-2" name="commentContent" cols="25" rows="5" placeholder="Your comment..."></textarea>
+                </div>
+
+                <input type="hidden" name="gossipId" id="gossipId">
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary"><i class="fa fa-send"></i> Submit </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Would you like to comment on this gossip? Please <a href="/accounts/login">login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End gossips comment Modal -->
+
+
+
+<!-- cheater comment Modal -->
+<div class="modal fade" id="cheatercommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-5 pt-3 container">
+                <div id="cheaterToComment">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <form action="{% url 'cheaters:cheater_add_comment' %}" method="post">
+                {% csrf_token %}
+                <div class="row container mx-auto">
+                    <textarea required class="form-control m-3 mt-2" name="commentContent" cols="25" rows="5" placeholder="Your comment..."></textarea>
+                </div>
+
+                <input type="hidden" name="cheaterId" id="cheaterId">
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary"><i class="fa fa-send"></i> Submit </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Would you like to comment on this cheater's story? Please <a href="/accounts/login">login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End cheater comment Modal -->
+
+
+{% endblock content %}
+
+{% block title %} {{query}} {% endblock title %}
+<section>
+    {% block navigation %} {% include 'navigation.html' %} {% endblock navigation %}
+</section>
+<section>
+    {% block aside %} {% include 'aside.html' %} {% endblock aside %}
+</section>
+
+<section>
+    {% block customJs %} 
+    {% include 'social_share.html' %} 
+    <script type="text/javascript">
+    	// For true false reaction
+    	function reactionFunction(id, action) {
+    	    var id = id;
+    	    var action = action;
+    	    var boldAction = "<strong class='text-uppercase'>"+ action +"</strong>";
+    	    var message = 'You are about to vote "'+ boldAction +'" for this post';
+
+    	    $("#gossip_id").val(id);
+    	    $("#cheater_id").val(id);
+    	    $("#action").val(action);
+
+    	    $(".appendReaction").remove();
+    	    $("<p class='appendReaction'>" + message + "</p>").insertAfter('#reactionSection');
+
+    	}
+    </script>
+
+    <script>
+    $('.answerQuestion').on('click', function() {
+        var id = $(this).data('id')
+        var title = $(this).data('title')
+        var image = $(this).data('image')
+        var username = $(this).data('username')
+        var name = $('#questionAuthorUsername');
+
+        $("#questionId").val(id)
+
+        $(".appendQuestion").remove()
+        $(".appendUsername").remove()
+        $(".appendImage").remove()
+        $("<span class='appendUsername mb-0 pb-0'>" + username + ' is asking...' + "</span>").insertAfter('#questionAnswerUsername');
+        $("<h5 class='appendQuestion'>" + title + "</h5>").insertAfter('#questionToAnswer');
+        $("<img  style='height:30px; width:30px;' class='img-fluid rounded-circle appendImage'>").attr('src', image).insertAfter('#questionAuthorImage');
+
+    });
+</script>
+
+<script>
+    $('.opposeQuestion').on('click', function() {
+        var id = $(this).data('id');
+        var title = $(this).data('title');
+        var image = $(this).data('image');
+        var username = $(this).data('username');
+
+        var name = $('#questionAuthorUsername');
+
+        $("#opposeQuestionId").val(id);
+
+        $(".appendQuestion").remove();
+        $(".appendUsername").remove();
+        $(".appendImage").remove();
+        $("<span class='appendUsername mb-0 pb-0'>" + username + "</span>").insertAfter('#questionAuthorUsername');
+        $("<q class='appendQuestion lead'>" + title + "</q>").insertAfter('#questionToOppose');
+        $("<img  style='height:30px; width:30px;' class='img-fluid rounded-circle appendImage'>").attr('src', image).insertAfter('#questionToOpposeAuthorImage');
+
+    });
+</script>
+
+<script type="text/javascript">
+	$('.cheatercomment').on('click', function() {
+	    var id = $(this).data('id');
+	    var title = $(this).data('title');
+
+	    $("#cheaterId").val(id)
+
+	    $(".cheaterappendTitle").remove()
+	    $("<h5 class='cheaterappendTitle'>" + title + "</h5>").insertAfter('#cheaterToComment');
+
+	});
+
+	//for gossips comment functionality
+	$('.gossipscomment').on('click', function() {
+	    var id = $(this).data('id');
+	    var title = $(this).data('title');
+
+	    $("#gossipId").val(id)
+
+	    $(".gossipsappendTitle").remove()
+	    $("<h5 class='gossipsappendTitle'>" + title + "</h5>").insertAfter('#gossipToCommentjquery');
+
+	});
+</script>
+    {% endblock customJs %}
+</section>

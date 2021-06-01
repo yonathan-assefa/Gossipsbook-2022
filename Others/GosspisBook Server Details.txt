@@ -1,0 +1,38 @@
+>>> IP address: 162.214.150.34
+>>> Hostname: server.mta.ovw.mybluehostin.me
+>>> Users:
+        - gossipsbook@server.mta.ovw.mybluehostin.me
+        - root@server.mta.ovw.mybluehostin.me
+
+>>> Nameservers:
+        -ns1.mta.ovw.mybluehostin.me
+        -ns2.mta.ovw.mybluehostin.me
+
+>>> WHM: https://162.214.150.34:2087/
+>>> cpanel: https://162.214.150.34:2083/
+>>> https://mta.ovw.mybluehostin.me:2087/
+>>> username: root
+>>> username: gossipsbook
+
+>>> email: gossipsbook.in@gmail.com
+>>> Server: Apache
+>>> OS: Linux (Centos 7)
+
+password: Ammananna@1991
+
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://www.gossipsbook.com/$1 [R,L]
+
+
+Case ID for your reference is 29648373
+
+Facebook app id: 256284062526998
+Facebbok app secret: 3b2bad9780208adb811bfb404d008553
+
+Google client id: 905120594719-u1vccapvhsi8acisme1em2jvsi8cj9kk.apps.googleusercontent.com
+Google client secret: 3C2YphJkAgwy4I7YpdwhH-tR
+
+**SSH 
+- name: gossipsbook_ssh 
+- value: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6h9F01ao9e8OfSyJ0ZQMHyemqdTISUUMOv7zy4BbGJi80BViRSOxLCwDjIRry6Y6V8/E4NzooZT58et4RTXC4qBFjiDThG9a2jtgNwy0Pm50hSC93YizzAr0N/NOWcfJkjGeQFfqmXtqYgYSZT4GJVOldL5JDC0Nv6Si4IJczPSTDqRix/a8f1GhQZOnsB50oHZKtBPX505qTRq6V4jz5ryYsZE62c6r5BPbGL8XzO7y+Ye8tXJS5w1YVi1qS/spUSsLWvFyJMUKWg5AWauhL5j1rVFuESH4iI2Xam3xqw7ZCZD4U/3Xe9fhKm2zoYkOMRnQHx0RkznyWHVIB1RXh

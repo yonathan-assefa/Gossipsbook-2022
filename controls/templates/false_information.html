@@ -1,0 +1,139 @@
+{% extends 'base.html' %} 
+{% load humanize %} 
+{% load static %} 
+{% block content %} 
+
+<style>
+    /* styling the "section" in the false info page */
+    #false_info_section{
+        color: white;
+        background-color: black;
+        padding: 7px;
+    }
+</style>
+
+{% for p in posts %}
+    {% if p.gossip %}
+        {% include 'f_information.html' with post=p.gossip section="gossip" %}
+    {% endif %}
+
+    {% if p.cheater %}
+        {% include 'f_information.html' with post=p.cheater section='cheater' %}
+    {% endif %}
+
+{% endfor %}
+
+
+<!-- comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-5 pt-3 container">
+                <div id="gossipToComment">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <form action="{% url 'gossips:gossip_add_comment' %}" method="post">
+                {% csrf_token %}
+                <div class="row container mx-auto">
+                    <textarea required class="form-control m-3 mt-2" name="commentContent" cols="25" rows="5" placeholder="Your comment..."></textarea>
+                </div>
+
+                <input type="hidden" name="gossipId" id="gossipId">
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary"><i class="fa fa-send"></i> Submit </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Would you like to comment on this gossip? Please <a href="/accounts/login">login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End comment Modal -->
+
+
+
+<!-- Reaction Modal -->
+<div class="modal fade" id="reactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="row pl-5 pt-3 container">
+                <div id="gossipToComment">
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="container">
+                <p id="reactionSection"></p>
+                <p>
+                    <strong>Note that you CANNOT undo this action...</strong>
+                </p>
+            </div>
+            <form class="d-inline" action="#" id="false_info_reaction_submit_form">
+                <input type="hidden" name="action" value="" id="action"> 
+                <input type="hidden" name="gossip_id" value="" id="gossip_id"> 
+                <input type="hidden" name="cheater_id" value="" id="cheater_id"> 
+               
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">No, Go Back</button>
+                    <button class="btn btn-outline-primary"><i class="fa fa-send"></i> Yes, continue </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="container mt-2 p-4">
+                Would you like to vote on this gossip? Please <a href="/accounts/login">login</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- End reaction Modal -->
+{% endblock content %}
+
+{% block title %} False Information Section {% endblock title %}
+<section>
+    {% block navigation %} {% include 'navigation.html' %} {% endblock navigation %}
+</section>
+<section>
+    {% block aside %} {% include 'aside.html' %} {% endblock aside %}
+</section>
+
+
+<!-- customJs -->
+{% block customJs %}
+
+<script>
+    $('.comment').on('click', function() {
+        var id = $(this).data('id');
+        var title = $(this).data('title');
+
+        $("#gossipId").val(id)
+
+        $(".appendTitle").remove()
+        $("<h5 class='appendTitle'>" + title + "</h5>").insertAfter('#gossipToComment');
+
+    });
+
+    // JQuery logic for true or false action of the false section
+    $(".reaction").on('click', function () {
+        var section = $(this).data('false_info_reaction_submit_section')
+        
+        if (section == 'gossip'){
+            url = "{% url 'gossips:gossip_reaction' %}"
+        } else if (section == 'cheater') {
+            url = "{% url 'cheaters:cheater_reaction' %}"
+        } 
+
+        $("#false_info_reaction_submit_form").attr('action', url)
+    })
+</script>
+
+{% endblock customJs %}
+<!-- End customJs -->

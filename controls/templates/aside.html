@@ -1,0 +1,51 @@
+  {% load control_tags %}
+  <!-- Hides for mobile -->
+  <div class="col-md-4 col-lg-4 col-xl-4">
+    <div class="card mt-5">
+      <h5 class="card-title card-header bg-secondary text-white"><i class="fa fa-fire"></i>  TRENDING</h5>
+      <div class="card-body">
+          <ul class="list-group">
+            <!-- Trending gossips -->
+            {% trending_gossips  as trending %}
+            {% for post in trending %}
+            <li class="list-group-item p-2 pl-2">
+              <a href="{{post.get_absolute_url}}" class="text-dark">
+                {{post.title|lower|capfirst}}
+              </a>
+            </li>
+            {% endfor %}
+            
+            <!-- Trending cheaters -->
+            {% trending_cheaters  as trending %}
+            {% for post in trending %}
+            <li class="list-group-item p-2 pl-2">
+              <a href="{{post.get_absolute_url}}" class="text-dark">{{post.title|lower|capfirst}}</a>
+            </li>
+            {% endfor %}
+
+            <!-- Trending questions -->
+            {% trending_questions  as trending %}
+            {% for post in trending %}
+            <li class="list-group-item p-2 pl-2">
+              <a href="{{post.get_absolute_url}}" class="text-dark">{{post.title|lower|capfirst}}</a>
+            </li>
+            {% endfor %}
+          </ul>
+      </div>
+    </div>
+
+
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="row justify-content-center">
+          <div class="p-2">About | </div>
+          <div class="p-2">Terms of use | </div>
+          <div class="p-2">Privacy | </div>
+          <div class="p-2">&copy; GossipsBook, India</div>
+        </div>
+     </div>
+
+    </div>
+  </div>
+
+

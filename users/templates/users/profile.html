@@ -1,0 +1,194 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Bala">
+    <meta name="description" content="Gossip Books">
+    <meta name="keywords" content="Gossip Books, answers">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <title>{{user.username}}'s Profile Settings | Gossip Books </title>
+</head>
+<body>
+    <div class="mb-5">
+        <!-- Navigation -->
+          {% block navigation %}
+            {% include 'navigation.html' %}
+          {% endblock navigation %}
+        <!-- End Navigation -->
+    </div>
+
+    <div class="container">
+        <div class="row">
+             <!-- Aside section starts here -->
+             <div class="col-md-4 col-lg-4 col-xl-4 d-md-block">
+                <div class="card mt-5">
+                  <h5 class="card-title card-header">Profile Settings</h5>
+                  <div class="card-body">
+                      <ul class="list-group">
+                        {% if not request.user.has_usable_password %}
+                        <li class="list-group-item"> 
+                          <a href="{% url 'account_set_password' %}">Set Password </a>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item"> 
+                          <a href="{% url 'account_change_password' %}">Change Password </a>
+                        </li>
+                        {% endif %}
+
+                        <li class="list-group-item"> 
+                          <a href="{% url 'controls:privacy_policy' %}">Privacy Policy</a>
+                        </li>
+                        <li class="list-group-item"><a href="/accounts/email/">Email and Notification</a>      </li>
+                      </ul>
+                  </div>
+
+                </div>
+
+
+                <div class="card mt-3 d-none d-md-block">
+                  <div class="card-body">
+                      <div class="row justify-content-center">
+                            <div class="p-2">About | </div>
+                            <div class="p-2">Terms of use | </div>
+                            <div class="p-2">Privacy | </div>
+                            <div class="p-2">&copy; GossipsBook, India</div>
+                      </div>
+                 </div>
+
+                </div>
+              </div>
+
+              <!-- Aside section ends here -->
+
+
+              <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                  <div class="mt-5">
+                    <strong>
+                      {% include 'messages.html' %}
+                    </strong>
+                  </div>
+
+              <!-- main section starts here -->
+                  <div class="mt-4">
+                        <section class="container mt-5">
+                            <form method="post" enctype="multipart/form-data">
+                              {% csrf_token %}
+                                  <div class="justify-content-center text-center">
+                                        {% if user.profile.image %}
+                                        <img style="height:250px; width:250px;" src="{{user.profile.image.url}}" alt="" class="img-fluid rounded-circle">
+                                        {% else %}
+                                        <img style="height:250px; width:250px;" src="{% static 'images/default_profile_pic2.png' %}" alt="" class="img-fluid rounded-circle">
+                                        {% endif %}
+                                        <br>
+                                        <div>
+                                          {{p_form.image}}
+                                        </div>
+                                  </div>
+                                  <div class="justify-content-center">
+                                    {% if u_form.errors %}
+                                    {% for field in u_form %}
+                                        {% for error in field.errors %}
+                                        <div class="alert alert-danger">
+                                            "{{ field.name|upper }}" {{ error }}
+                                        </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                        {% for error in u_form.non_field_errors %}
+                                        <div class="alert alert-danger">
+                                             {{ error }}
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                         {% if p_form.errors %}
+                                    {% for field in p_form %}
+                                        {% for error in field.errors %}
+                                        <div class="alert alert-danger">
+                                           "{{ field.name|upper }}" {{ error }}
+                                        </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                        {% for error in p_form.non_field_errors %}
+                                        <div class="alert alert-danger">
+                                            {{ error }}
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                        <div class="card">
+                                          <div class="card-body">
+                                            <div>
+                                              <label>Email Address:   </label>
+                                               {{u_form.email}}
+                                            </div>
+                                            <br>
+                                            <div>
+                                              <label>Username:   </label>
+                                              {{u_form.username}}
+                                            </div>
+                                              <br>
+                                            <div>
+                                              <label>Bio:   </label>
+                                              {{p_form.bio}}
+                                            </div>
+
+                                            <br>
+                                            <div>
+                                              <label>Designation:   </label>
+                                              {{p_form.designation}}
+                                            </div>
+
+                                            <br>
+                                            <div>
+                                              <label>Location:   </label>
+                                              {{p_form.location}}
+                                            </div>
+
+                                            <br>
+                                            <div>
+                                              <label>Languages:   </label>
+                                              {{p_form.languages}}
+                                            </div>
+                                            <div>
+                                              <br>
+                                              <label>Interests:   </label>
+                                              <ul>
+                                                {% for interest in user_profile.profile.interests.all %}
+                                                    <li>{{ interest.title }} </li>
+                                                {% endfor %}
+                                              </ul>
+                                              <a href="{% url 'controls:welcome' %}">Edit Interests</a>
+                                            </div>
+
+                                          </div>
+                                        </div>
+
+                                    </div>
+                              <br>
+                              <button class="btn btn-block" style="color:white; background-color: #FF9933;">Update Profile</button>
+                            </form>
+
+                            <br><br>
+                        </section>
+                  </div>
+              <!-- main section ends here -->
+              </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

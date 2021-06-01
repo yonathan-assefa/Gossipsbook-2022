@@ -1,0 +1,51 @@
+{% load static %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/infinite.min.js' %}"></script>
+
+<!-- Custom Javascript/JQuery -->
+<script>
+    $(document).ready(function(){
+
+      //  controls the radio button check and unchecked functionality of the navigation and "whichsection" section
+        $(".data").hide();
+
+        $('#myForm input').on('change', function(){
+            var setValue = $('[type="radio"]:checked').val();
+            $(".data").hide();
+            $("#" + $(this).val()).fadeIn(700);
+        });
+
+        // Request For Removal pop Logic
+        $('.rfr').on('click', function() {
+            var id = $(this).data('id');
+            var section = $(this).data('section');
+
+            $("#section").val(section)
+            $("#post_id").val(id)
+
+        });
+        
+        var spinner_url = '{% static "images/loading.gif" %}'
+        // Waypoint Jquery infinte scroll
+        var infinite = new Waypoint.Infinite({
+            element: $('.infinite-container')[0],
+            offset: 'bottom-in-view',
+            onBeforePageLoad: function () {
+                $('#feed_loading_spinner').append("<img src="+ spinner_url+ "/>");
+            },
+            onAfterPageLoad: function () {
+                $('#feed_loading_spinner img:last-child').remove();
+            }
+        });
+
+        // Add link to post input logic
+        $('.addLink').on('click', function () {
+            $(this).hide();
+            $(this).next('input').removeAttr('hidden');
+        });
+
+    });
+</script>
+<!-- End Custom Javascript/JQuery -->

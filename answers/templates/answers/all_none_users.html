@@ -1,0 +1,124 @@
+{% extends 'base.html' %} {% load static %} {% load humanize %} {% block content %}
+
+<style>
+    .checkbox {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .checkbox_input {
+        display: none;
+    }
+    
+    .checkbox_box {
+        width: 1.20em;
+        height: 1.20em;
+        position: relative;
+        border: 2px solid #cccccc;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        flex-shrink: 0;
+        transition: background 0.25s, border-color 0.55s;
+    }
+    
+    .checkbox_box::after {
+        content: '\2713';
+        color: white;
+        transform: scale(0);
+        transition: transform 0.55s
+    }
+    
+    .checkbox_input:checked+.checkbox_box {
+        background: #FF9933;
+        border-color: #FF9933;
+    }
+    
+    .checkbox_input:checked+.checkbox_box::after {
+        transform: scale(1.1);
+    }
+</style>
+{% for question in questions %}
+
+<div class="row mb-5">
+    <div class="card w-100">
+        <div class="card-body">
+            <h6 class="card-title">
+                {% if question.author.profile.image %}
+                <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{{question.author.profile.image.url}}"> {{question.author.username}}
+                {% else %}
+                <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}"> {{question.author.username}}
+                {% endif %}
+                <small class="text-muted ml-2">{{question.date_published|naturaltime}}</small>
+            </h6>
+            <h5>
+                {{question.title|truncatewords:100}}
+            </h5>
+
+
+
+            {% for answer in question.get_answers %}
+
+            <hr>
+            <div class="row">
+                <div class="col text-left">
+                    {% if answer.author.profile.image %}
+                    <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{{answer.author.profile.image.url}}">
+                    {% else %}
+                    <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}">
+                    {% endif %}
+                    <span class="ml-2"> {{answer.author.username}} </span>
+                </div>
+                <div class="col text-right">
+                    <a href="/accounts/login" style="background-color: #FF9933; color: white; border-color: white" class="btn btn-primary">
+                        <i class="fa fa-sign-in"></i> Login to answer <span class="d-none d-md-inline">this question</span>
+                    </a>
+                </div>
+            </div>
+            <p class="card-text"> {{answer.content| linebreaks}} </p>
+
+
+            <div class="row">
+                <div class="col m-2 pl-3">
+                    <a href="/accounts/login" type="button" class="btn btn-sm btn-info"> <i class="fa fa-thumbs-up"></i> Login to Like ({{answer.total_likes}})</a>
+                    </form>
+                </div>
+
+                {% static 'images/GossipsBook_logo.png' as post_image %}
+                <div class="col m-2 p-1">
+                    <a href="#" 
+                        data-toggle="modal"
+                        {% if question.image %}
+                        onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{question.image.url}}')" 
+                        {% else %}
+                        onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{post_image}}')"
+                        {% endif %}
+                        data-target="#shareModal"  
+                        class="mr-3 share-button"> 
+                        <i class="fa fa-share-alt"></i> 
+                        <span class="d-none d-md-inline">Share</span> 
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center p-4" style="color: #FF9933; font-weight: bold; font-size: 20px;">
+                This question has not received any answers yet.
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+
+{% endfor %}
+
+{% endblock content %} 
+{% block navigation %} 
+{% include 'navigation.html' %} 
+{% endblock navigation %} 
+{% block aside %} {% include 'aside.html' %} {% endblock aside %} 
+{% include 'social_share.html' %}

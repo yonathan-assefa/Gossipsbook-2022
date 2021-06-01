@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+{% for question in questions %}
+
+  {% include 'answers/all_answers.html' %}
+
+{% endfor %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="send_to_category" tabindex="-1" role="dialog" aria-labelledby="send_to_category" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5>Share this question with its reply as</h5>
+          <div id="decide_send_to" class="mb-3">
+              <div class="form-check form-check-inline">
+                <label class="form-check-label" for="send_gossips">
+                  <input class="form-check-input" type="radio" id="send_gossips" name="send_to_feed" value="send_answer_to_gossips"> Gossips
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <label class="form-check-label" for="send_cheaters">
+                  <input class="form-check-input" type="radio" id="send_cheaters" name="send_to_feed" value="send_answer_to_cheaters"> Cheaters
+                </label>
+              </div>
+          </div>
+            <form method="post" class="send_answer" id="send_answer_to_gossips" method="POST" action="{% url 'gossips:gossips_new' %}">
+                {% csrf_token %}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-sm btn-outline-primary"> <i class="fa fa-paper-plane"></i> Send</button>
+                </div>
+              <input type="hidden" name="title" id="gossip_title" value="">
+              <input type="hidden" name="content" id="gossip_content" value="">
+              <input type="hidden" name="from_question_user" class="from_question_user" value="">
+              <input type="hidden" name="from_question_answer_provider" class="from_question_answer_provider" value="">
+            </form>
+
+
+            <form method="post" class="send_answer" id="send_answer_to_cheaters" method="POST" action="{% url 'cheaters:cheaters_new' %}">
+              {% csrf_token %}
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-dismiss="modal">Close</button>
+                  <button class="btn btn-sm btn-outline-primary"> <i class="fa fa-paper-plane"></i> Send</button>
+              </div>
+              <input type="hidden" name="title" id="cheater_title" value="">
+              <input type="hidden" name="content" id="cheater_content" value="">
+              <input type="hidden" name="from_question_user" class="from_question_user" value="">
+              <input type="hidden" name="from_question_answer_provider" class="from_question_answer_provider" value="">
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block title %} Answers Section {% endblock title %}
+
+{% block navigation %}
+      {% include 'navigation.html' %}
+{% endblock navigation %}
+
+
+{% block aside %}
+      {% include 'aside.html' %}
+{% endblock aside %}
+
+{% block customJs %}
+<script>
+  //  logic for hide or show section to share post to depending on user selection
+  $(".send_answer").hide();
+  $('#decide_send_to input').on('change', function(){
+      // var setValue = $('[type="radio"]:checked').val();
+      $(".send_answer").hide();
+      $("#" + $(this).val()).fadeIn(700);
+  });
+
+  $('.send_to_category_button').on('click', function () {
+    var question_title = $(this).data('question_title');
+    var answer_content = $(this).data('answer_content');
+    var from_question_answer_provider = $(this).data('from_question_answer_provider');
+    var from_question_user = $(this).data('from_question_user');
+
+    $(".from_question_answer_provider").val(from_question_answer_provider);
+    $(".from_question_user").val(from_question_user);
+
+
+    $("#gossip_title").val(question_title)
+    $("#gossip_content").val(answer_content)
+
+    $("#cheater_title").val(question_title)
+    $("#cheater_content").val(answer_content)
+  })
+</script>
+{% include 'social_share.html' %}
+{% endblock customJs %}
+
+

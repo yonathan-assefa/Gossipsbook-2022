@@ -1,0 +1,122 @@
+{% extends 'base.html' %} 
+{% load humanize %}
+{% load static %}
+{% block content %} 
+
+<section class="ml-3">
+
+<section class="row">
+   {% if question.author.profile.image %}
+   <img class="rounded-circle" src="{{question.author.profile.image.url}}" alt="{{question.author.username}} image" style="width: 35px; height: 35px;">
+   {% else %}
+   <img class="rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{question.author.username}} image" style="width: 35px; height: 35px;">
+   {% endif %}
+   <small class="pl-1">
+      
+   <span> <a href="{% url 'users:user_view_profile' question.author.username %}" class="text-dark">{{question.author.username}} </a> </span> | 
+   <span><i class="fa fa-calendar"></i> {{question.date_published}} </span> | 
+   <span><i class="fa fa-comments"></i> {{question.get_answers.count}}</span>
+   </small>
+</section>
+<hr>
+
+<section class="row">
+   <h4><strong>{{question.title}} </strong> </h4>
+</section>
+
+{% if question.image %}
+<section>
+   <img class="img-fluid" src="{{question.image.url}}" alt="gossips book" style="max-height: 300px; width: 100%;">
+</section>
+{% endif %}
+
+{% static 'images/GossipsBook_logo.png' as post_image %}
+
+   <div class="row">
+        <div class="col-7 m-2">
+        </div>
+
+        <div class="col-3 text-right pr-3 m-2">
+            <a href="#" 
+                data-toggle="modal"
+                {% if question.image %}
+                onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{question.image.url}}')" 
+                {% else %}
+                onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{post_image}}')"
+                {% endif %}
+                data-target="#shareModal"  
+                class="mr-3 share-button"> 
+                <i class="fa fa-share-alt"></i> 
+                <span class="d-none d-md-inline">Share</span> 
+            </a>
+        </div>
+    </div>
+<hr>
+
+<section>
+   <h5 class="mb-4">Answers:</h5>
+   {% for answer in question.get_answers.all %}
+  <div class="mb-3 row">
+      <div>
+         {% if answer.author.profile.image %}
+         <img class="rounded-circle" src="{{answer.author.profile.image.url}}" alt="{{answer.author.username}} image" style="width: 35px; height: 35px;">
+         {% else %}
+         <img class="rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{answer.author.username}} image" style="width: 35px; height: 35px;">
+         {% endif %}
+      </div>
+
+      <div class="col-8">
+         <strong><a href="{% url 'users:user_view_profile' answer.author.username %}" class="text-dark">{{answer.author.username}}</a>  </strong>
+         <small class="text-muted ml-1">{{answer.date_published|naturaltime}}</small>
+
+          <div>
+            {{answer.content | linebreaks}}
+          </div>
+          <hr>
+      </div>
+  </div>
+  {% empty %}
+  <div class="container">
+     <h5>This question has not received any answers yet.</h5>
+     <br>
+  </div>
+   {% endfor %}
+</section>
+
+ <!-- Answer Form -->
+ <div class="card my-4">
+   <h5 class="card-header">Drop an answer:</h5>
+   <div class="card-body">
+
+      {% if user.is_authenticated %}
+     <form action="{% url 'answers:answers_new' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="questionId" value="{{question.id}}">
+       <div class="form-group">
+         <textarea required class="form-control" name="answer_question" rows="3" placeholder="Your answer..."></textarea>
+       </div>
+       <button type="submit" class="btn true_reaction_button" style="background-color:#FF9933; color:white; border-color:#FF9933"><i class="fa fa-send"></i> Submit</button>
+     </form>
+     {% else %}
+     <div class="container mt-2 p-4">
+         Would you like to answer on this question? Please <a href="/accounts/login">login</a>
+     </div>
+     {% endif %}
+   </div>
+ </div>
+</section>
+
+{% endblock content %}
+
+{% block title %} {{question.title}} {% endblock title %}
+<section>
+   {% block navigation %} {% include 'navigation.html' %} {% endblock navigation %}
+</section>
+
+
+<section>
+   {% block aside %} {% include 'aside.html' %} {% endblock aside %}
+</section>
+{% block customJs %}
+{% include 'social_share.html' %}
+{% endblock %}

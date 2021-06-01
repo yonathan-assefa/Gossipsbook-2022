@@ -1,0 +1,225 @@
+{% load static %}
+<style>
+    .checkbox {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .checkbox_input {
+        display: none;
+    }
+    
+    .checkbox_box {
+        width: 1.20em;
+        height: 1.20em;
+        position: relative;
+        border: 2px solid #cccccc;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        flex-shrink: 0;
+        transition: background 0.25s, border-color 0.55s;
+    }
+    
+    .checkbox_box::after {
+        content: '\2713';
+        color: white;
+        transform: scale(0);
+        transition: transform 0.55s
+    }
+    
+    .checkbox_input:checked+.checkbox_box {
+        background: #FF9933;
+        border-color: #FF9933;
+    }
+    
+    .checkbox_input:checked+.checkbox_box::after {
+        transform: scale(1.1);
+    }
+</style>
+<div class="card mb-4">
+    <div class="card-body">
+        <h6 class="card-title">
+
+            {% if user.is_authenticated %}
+            <a class="text-dark" href="{% url 'users:user_view_profile' user.username %}">
+                <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% if request.user.profile.image %} {{user.profile.image.url}} {% else %} {% static 'images/default_profile_pic2.png' %} {% endif %}"> {{ user.username }} 
+            </a>
+            {% else %}
+
+            <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{{ user.profile.image.url }}  {% static 'images/default_profile_pic2.png' %} "> Anonymous User <a href="/accounts/login">login</a> 
+            {% endif %}
+
+        </h6>
+        <form action="#">
+            {% csrf_token %}
+            <input class="form-control" type="text" placeholder="Start writing here..." data-toggle="modal" data-target="#start_typing_modal">
+        </form>
+    </div>
+</div>
+
+
+<!-- start_typing Modal -->
+<div class="modal fade" id="start_typing_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">
+
+                    {% if user.is_authenticated %}
+                    <img style="height:30px; width:30px;" class="img-fluid rounded-circle" src="{% if request.user.profile.image %} {{user.profile.image.url}} {% else %} {% static 'images/default_profile_pic2.png' %} {% endif %}"> {{user.username}} {% else %}
+                    <img style="height:30px; width:30px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}"> Anonymous User? <a href="/accounts/login">login</a> {% endif %}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+
+            {% if user.is_authenticated %}
+            <h6 class="p-3 ">
+                Select a category...
+            </h6>
+            {% else %}
+            <h6 class="p-3 ">
+                Please <a href="/accounts/login"> login </a> to make post
+            </h6>
+            {% endif %}
+
+
+            <div class="modal-body">
+                <div id="myForm" class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label" for="start_typing_question">
+                  <input class="form-check-input" type="radio" id="start_typing_question" name="category" value="start_typing_questions"> Question
+              </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label" for="start_typing_gossip">
+                  <input class="form-check-input" type="radio" id="start_typing_gossip" name="category" value="start_typing_gossips"> Gossips
+              </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label" for="start_typing_cheater">
+                  <input class="form-check-input" type="radio" id="start_typing_cheater" name="category" value="start_typing_cheaters"> Cheaters
+              </label>
+                    </div>
+                </div>
+
+
+                <!--          This part fades in depending on selected checkbox above - has 3 parts (forms)-->
+                <form id="start_typing_questions" class="data" action="{% url 'questions:questions_new' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input required type="text" class="form-control" name="title" placeholder='Start your question with "What", "Why, "How", etc...'>
+                        
+                        <div>
+                            <span>Hint (<i class="fa fa-bolt"></i>):</span>
+                        </div>
+                        <div>
+                            <span class="text-danger">Feel free! Express yourself. Ask anything you'll like to know about...</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col">
+                            <input type="file" accept="image/*" class="form-control-file" name="image">
+                            <small class="text-muted">Add Image</small>
+                        </div>
+
+                        <div class="col text-right mr-3">
+                            <span class="addLink"><i class="fa fa-link"></i> add link (optional)</span>
+                            <input type="link" placeholder="Add relevant link" name="link" class="form-control" hidden>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% include 'related_tags.html' with title_tag_section="Related Tags:" name="d" %}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary"><i class="fa fa-send"></i> Ask Question</button>
+                    </div>
+                </form>
+
+
+
+                <form id="start_typing_gossips" action="{% url 'gossips:gossips_new' %}" class="data" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input required type="text" class="form-control" name="title" placeholder="Give your gossip a title...">
+                        <div>
+                            <span>Hint (<i class="fa fa-bolt"></i>):</span>
+                        </div>
+                        <div>
+                            <span class="text-danger">Do you have a gossip to share? Share it! Let's see what our users think...</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea required class="form-control" name="content" cols="30" rows="10" placeholder="Briefly let us about this gossip..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <input type="file" accept="image/*" class="form-control-file" name="image">
+                            <small class="text-muted">Add Proof (Image only)</small>
+                        </div>
+
+                        <div class="col text-right mr-3">
+                            <span class="addLink"><i class="fa fa-link"></i> add link (optional)</span>
+                            <input type="link" placeholder="Add relevant link" name="link" class="form-control" hidden>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% include 'related_tags.html' with title_tag_section="Related Tags:" name="e" %}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary"><i class="fa fa-send"></i> Submit Gossip</button>
+                    </div>
+                </form>
+
+                <form id="start_typing_cheaters" class="data" action="{% url 'cheaters:cheaters_new' %}" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input required type="text" class="form-control" name="title" placeholder="What is your title...">
+                        <div>
+                            <span>Hint (<i class="fa fa-bolt"></i>):</span>
+                        </div>
+                        <div>
+                            <span class="text-danger">Have you ever been cheated? (online or offline)? Our users would like to hear it! Share the story publicly with us...</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea required class="form-control" name="content" cols="30" rows="10" placeholder="Write a brief description"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <input type="file" accept="image/*" class="form-control-file" name="image">
+                            <small class="text-muted">Add Proof (Image only)</small>
+                        </div>
+
+                        <div class="col text-right mr-3">
+                            <span class="addLink"><i class="fa fa-link"></i> add link (optional)</span>
+                            <input type="link" placeholder="Add relevant link" name="link" class="form-control" hidden>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% include 'related_tags.html' with title_tag_section="Related Tags:" name="f" %}
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

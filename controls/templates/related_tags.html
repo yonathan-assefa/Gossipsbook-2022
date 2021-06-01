@@ -1,0 +1,15 @@
+{% load control_tags %}
+
+{% interests_all as interests %}
+<h6>{{title_tag_section}}</h6>
+{% for interest in interests %}
+{% if interest in request.user.profile.interests.all %}
+    <div class="form-check form-check-inline">
+        <label class="form-check-label checkbox" for="{{interest.title}}_{{interest.id}}_{{name}}">
+            <input class="form-check-input checkbox_input" type="checkbox" name="related_tags" value="{{interest.id}}" id="{{interest.title}}_{{interest.id}}_{{name}}">
+            <div class="checkbox_box"></div>
+            {{interest.title}}
+        </label>
+    </div>
+{% endif %}
+{% endfor %}

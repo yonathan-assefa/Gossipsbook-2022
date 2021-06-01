@@ -1,0 +1,1 @@
+web: gunicorn GossipBooks.wsgi --log-file -

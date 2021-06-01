@@ -1,0 +1,83 @@
+{% load static %} {% load humanize %}
+<div class="row mb-5">
+    <div class="card w-100">
+        <div class="card-body">
+            <h6 class="card-title">
+                {% if question.author.profile.image %}
+                <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{{question.author.profile.image.url}}"> {{question.author.username}}
+                {% else %}
+                <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}"> {{question.author.username}}
+                {% endif %}
+                <small class="text-muted ml-2">{{question.date_published|naturaltime}}</small>
+            </h6>
+            <h5>
+                {{question.title|truncatewords:100}}
+            </h5>
+
+
+
+            {% for answer in question.get_answers %}
+
+            <hr>
+            <div class="row">
+                <div class="col text-left">
+                    {% if answer.author.profile.image %}
+                    <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{{answer.author.profile.image.url}}">
+                    {% else %}
+                    <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}">
+                    {% endif %}
+                    <span class="ml-2"> {{answer.author.username}} </span>
+                </div>
+                <div class="col text-right">
+                    <button type="button" style="background-color: black; color: white; border-color: white" 
+                    data-answer_content="{{answer.content}}" 
+                    data-question_title="{{question.title}} - {{answer.author.id}}" 
+                    class="send_to_category_button btn btn-primary" 
+                    data-toggle="modal" 
+                    data-from_question_answer_provider="{{answer.author.username}}"
+                    data-from_question_user="{{question.author.username}}"
+                    data-target="#send_to_category">
+                    <i class="fa fa-paper-plane"></i>    Send
+                    </button>
+                </div>
+            </div>
+            <p class="card-text"> {{answer.content| linebreaks}} </p>
+
+
+            <div class="row">
+                <div class="col m-2 pl-3">
+                    <form action="{% url 'answers:like_answer' answer.id%}">
+                        {% if user in answer.likes.all %}
+                        <button class="true_reaction_button btn btn-sm btn-danger"> <i class="true_reaction_button fa fa-thumbs-up"></i> liked {{answer.total_likes}} </button> 
+                        {% else %}
+                        <button class="true_reaction_button btn btn-sm btn-primary"> <i class="true_reaction_button fa fa-thumbs-up"></i> {{answer.total_likes}} Like{{answer.total_likes | pluralize}} </button> 
+                        {% endif %}
+                    </form>
+                </div>
+
+                {% static 'images/GossipsBook_logo.png' as post_image %}
+                <div class="col m-2 p-1">
+                    <a href="#" 
+                        data-toggle="modal"
+                        {% if question.image %}
+                        onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{question.image.url}}')" 
+                        {% else %}
+                        onclick="sharePostFunc('{{question.title}}','{{question.get_absolute_url}}', '{{post_image}}')"
+                        {% endif %}
+                        data-target="#shareModal"  
+                        class="mr-3 share-button"> 
+                        <i class="fa fa-share-alt"></i> 
+                        <span class="d-none d-md-inline">Share</span> 
+                    </a>
+                    <!-- <a class="col d-inline"><i class="fa fa-comment"></i> Reply</a> -->
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center p-4" style="color: #FF9933; font-weight: bold; font-size: 20px;">
+                This question has not received any answers yet.
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>

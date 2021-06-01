@@ -1,0 +1,5 @@
+https://gossipsbook.herokuapp.com/ | https://git.heroku.com/gossipsbook.git
+
+postgres://knysciviedacrl:007fc987d52751e66ff685450a5544474107b88796c441c5c8ccd41a0ac64d1e@ec2-54-166-114-48.compute-1.amazonaws.com:5432/d3cuqebi9drg9h
+
+$ source "c:/Users/OBED IFEOMA/Documents/Tutorials/Python/Django/Sabi Programmer/GossipBooks/env/Scripts/activate"

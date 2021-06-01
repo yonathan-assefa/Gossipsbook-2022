@@ -1,0 +1,40 @@
+{% extends 'base.html' %} 
+{% block content %} 
+
+{% url 'cheaters:cheater_add_comment' as cheater_comment_form %}
+{% url 'cheaters:cheater_reaction' as reaction_url %}
+
+<section class="ml-3">
+   {% include 'detail.html' with post=cheater comment_form_url=cheater_comment_form reaction_url=reaction_url hidden_id='cheater' %}
+</section>
+
+{% endblock content %}
+
+{% block title %} {{cheater.title}} {% endblock title %}
+<section>
+   {% block navigation %} {% include 'navigation.html' %} {% endblock navigation %}
+</section>
+
+
+<section>
+   {% block aside %} {% include 'aside.html' %} {% endblock aside %}
+</section>
+
+{% block customJs %}
+<script>
+   function reactionFunction(id, action) {
+      var id = id;
+      var action = action;
+      var boldAction = "<strong class='text-uppercase'>"+ action +"</strong>"
+      var message = 'You are about to vote "'+ boldAction +'" for this post'
+
+      $("#action").val(action)
+      $("#cheater_id").val(id)
+
+      $(".appendReaction").remove()
+      $("<p class='appendReaction'>" + message + "</p>").insertAfter('#reactionSection');
+
+   }
+</script>
+{% include 'social_share.html' %}
+{% endblock %}

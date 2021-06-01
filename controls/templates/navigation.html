@@ -1,0 +1,373 @@
+{% load static %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<style>
+    .checkbox {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .checkbox_input {
+        display: none;
+    }
+    
+    .checkbox_box {
+        width: 1.20em;
+        height: 1.20em;
+        position: relative;
+        border: 2px solid #cccccc;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        flex-shrink: 0;
+        transition: background 0.25s, border-color 0.55s;
+    }
+    
+    .checkbox_box::after {
+        content: '\2713';
+        color: white;
+        transform: scale(0);
+        transition: transform 0.55s
+    }
+    
+    .checkbox_input:checked+.checkbox_box {
+        background: #FF9933;
+        border-color: #FF9933;
+    }
+    
+    .checkbox_input:checked+.checkbox_box::after {
+        transform: scale(1.1);
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <div class="row">
+            <a class="navbar-brand" href="{% url 'gossips:gossips_index' %}">
+                <img src="{% static 'images/GossipsBook_logo.png' %}" alt="">
+            </a>
+
+
+            {% url 'questions:questions_index' as index_page %} 
+            {% url 'gossips:gossips_index' as gossips_page %} 
+            {% url 'cheaters:cheaters_index' as cheaters_page %} 
+            {% url 'answers:answers' as answers_page %} 
+            {% url 'cheaters:cheaters_index' as cheaters_page %}
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <form class="form-inline input-group" action="{% url 'searches:search' %}">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text bg-white"><i class="fa fa-search"></i></div>
+                        </div>
+                        <input id="search_gossipsbook" name="q" class="form-control mr-sm-2" type="search" placeholder="Search GossipsBook..." aria-label="Search">
+                    </form>
+                </ul>
+
+                <ul class="navbar-nav mr-auto ml-2">
+                    <li class="nav-item {% if request.path == gossips_page %} active {% endif %} {% if request.path == index_page %} active {% endif %} {% if request.path == cheaters_page %} active {% endif %}">
+                        <a class="nav-link  pr-4 pl-4" title="Home" href="{% url 'gossips:gossips_index' %}" style="font-size: 35px; padding: 0px;">
+                            <i class="fa fa-home"></i>
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.path == answers_page %} active {% endif %}">
+                        <a class="nav-link pr-4 pl-4" title="Answers" href="{% url 'answers:answers' %}" style="font-size: 35px; padding: 0px;"><i class="fa fa-edit"></i></a>
+                    </li>
+                    <li class="nav-item {% if request.path == notifications_page %} active {% endif %}">
+                        <a class="nav-link pr-4 pl-4" title="Notification" href="#" style="font-size: 35px; padding: 0px;"><i class="fa fa-bell"></i></a>
+                    </li>
+
+                    <li class="nav-item dropdown pr-4 pl-4">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if request.user.profile.image %}
+                            <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% if request.user.is_authenticated %} {{request.user.profile.image.url}} {% else %} {% static 'images/default_profile_pic2.png' %} {% endif %}">
+                            {% else %}
+                            <img style="height:35px; width:35px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}">
+                            {% endif %}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">                        
+                            {% if request.user.is_authenticated %}
+                            <a class="dropdown-item" data-toggle="modal" data-target="#messagingModal" href="#"><i class="fa fa-envelope"> </i>  Messaging</a>
+                            <a class="dropdown-item" href="{% url 'controls:false_information' %}"> <i class="fa fa-exclamation-triangle"> </i> False Information</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#feedbackModal"> <i class="fa fa-comments"> </i> Feedback</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'users:user_view_profile' user.username %}"> <i class="fa fa-user"> </i> View Profile</a>
+                            <a class="dropdown-item" href="{% url 'users:user_profile' %}"> <i class="fa fa-gear"> </i> Settings</a>
+                            <a class="dropdown-item" href="#">
+                            <form method="post" action="{% url 'account_logout' %}">
+                              {% csrf_token %}
+                              <button type="submit" class="btn"> <i class="fa fa-sign-out"> </i> Log out</button>
+                            </form>
+                            </a>
+                            {% else %}
+                            <a class="dropdown-item" href="{% url 'controls:false_information' %}"> <i class="fa fa-exclamation-triangle"> </i> False Information</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#feedbackModal"> <i class="fa fa-comments"> </i> Feedback</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/accounts/login"> <i class="fa fa-sign-in"> </i> Sign In</a>
+                            {% endif %}
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item d-none d-md-block">
+                        <a class="nav-link p-1 pl-3 pr-3 mt-2" title="Ask a question" href="#" data-toggle="modal" data-target="#addPostPopup" style="font-size: 18px; background-color: white; color: #FF9933; border-radius: 20px; font-weight:bold;">
+                            Add Post
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+
+
+
+
+<!-- Modal Add Post-->
+<div class="modal fade" id="addPostPopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">
+
+
+                    {% if request.user.is_authenticated %}
+                    <img style="height:30px; width:30px;" class="img-fluid rounded-circle" src="{% if request.user.profile.image %} {{user.profile.image.url}} {% else %} {% static 'images/default_profile_pic2.png' %} {% endif %}"> {{user.username}} 
+                    {% else %}
+                    <img style="height:30px; width:30px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}"> Anonymous User? 
+                    {% endif %}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+
+            {% if request.user.is_authenticated %}
+            <h6 class="p-3 ">
+                Select a category...
+            </h6>
+            {% else %}
+            <h6 class="p-3 ">
+                Please <a href="/accounts/login"> login </a> to make post
+            </h6>
+            {% endif %}
+
+
+
+            <div class="modal-body">
+                <div id="myForm" class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label" for="questionNav">
+                  <input class="form-check-input" type="radio" id="questionNav" name="category" value="questions"> Question
+              </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label" for="gossipNav">
+                  <input class="form-check-input" type="radio" id="gossipNav" name="category" value="gossips"> Gossips
+              </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label" for="cheaterNav">
+                  <input class="form-check-input" type="radio" id="cheaterNav" name="category" value="cheaters"> Cheaters
+              </label>
+                    </div>
+                </div>
+
+
+
+                <!-- This part fades in depending on selected checkbox above - has 3 parts (forms)-->
+                <form id="questions" class="data" action="{% url 'questions:questions_new' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group mt-3">
+                        <input required type="text" class="form-control" name="title" placeholder='Start your question with "What", "Why, "How", etc...'>
+                        <div>
+                          <span>Hint (<i class="fa fa-bolt"></i>):</span>
+                        </div>
+                        <div>
+                            <span class="text-danger">Feel free! Express yourself. Ask anything you'll like to know about...</span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="form-group col">
+                            <input type="file" accept="image/*" class="form-control" name="image">
+                            <small class="text-muted">Add image (optional - Image only)</small>
+                        </div>
+
+                        <div class="col text-right mr-3">
+                            <span class="addLink"><i class="fa fa-link"></i> add link</span>
+                            <input type="link" placeholder="Add relevant link" name="link" class="form-control" hidden>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        {% include 'related_tags.html' with title_tag_section="Related Tags:" name="a" %}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary"><i class="fa fa-send"></i> Ask Question</button>
+                    </div>
+                </form>
+
+
+
+                <form id="gossips" class="data" action="{% url 'gossips:gossips_new' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input required type="text" class="form-control" name="title" placeholder="Give your gossip a title...">
+                        <div>
+                            <span>Hint (<i class="fa fa-bolt"></i>):</span>
+                        </div>
+                        <div>
+                            <span class="text-danger">Do you have a gossip to share? Share it! Let's see what our users think...</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea required class="form-control" name="content" cols="30" rows="10" placeholder="Briefly let us about this gossip..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <input type="file" accept="image/*" class="form-control-file" name="image">
+                            <small class="text-muted">Add Proof (Image only)</small>
+                        </div>
+
+                        <div class="col text-right mr-3">
+                            <span class="addLink"><i class="fa fa-link"></i> add link</span>
+                            <input type="link" placeholder="Add relevant link" name="link" class="form-control" hidden>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% include 'related_tags.html' with title_tag_section="Related Tags:" name='b' %}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary"><i class="fa fa-send"></i> Submit Gossip</button>
+                    </div>
+                </form>
+
+                <form id="cheaters" class="data" action="{% url 'cheaters:cheaters_new' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input required type="text" class="form-control" name="title" placeholder="What is your title...">
+                        <div>
+                            <span>Hint (<i class="fa fa-bolt"></i>):</span>
+                        </div>
+                        <div>
+                            <span class="text-danger">Have you ever been cheated? (online or offline)? Our users would like to hear it! Share the story publicly with us...</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea required class="form-control" name="content" cols="30" rows="10" placeholder="Write a brief description"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <input type="file" accept="image/*" class="form-control" name="image">
+                            <small class="text-muted">Add Proof (Image only)</small>
+                        </div>
+
+                        <div class="col text-right mr-3">
+                            <span class="addLink"><i class="fa fa-link"></i> add link</span>
+                            <input type="link" placeholder="Add relevant link" name="link" class="form-control" hidden>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% include 'related_tags.html' with title_tag_section="Related Tags:" name="c" %}
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary"><i class="fa fa-send"></i> Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End add post modal -->
+
+
+
+
+<!-- Messaging Modal -->
+<div class="modal fade" id="messagingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Messages
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                <img style="height:30px; width:30px;" class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic.png' %}">
+                            </div>
+                            <div class="col">
+                                <h5 class="modal-title"> username <br> <small>You:</small> <i class="fa fa-thumbs-up"></i></h5>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                    <div class="col"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Coming Soon!</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Messaging Modal -->
+
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form action="{% url 'controls:feedback' %}">
+                    <div class="container">
+                        <textarea required class="form-control" rows="7" name="feedback_message" placeholder="Drop your feedback..."></textarea>
+                    </div>
+
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-outline-dark" data-dismiss="modal">Close</button>
+                        <button class="btn btn-sm btn-outline-primary"><i class="fa fa-send"></i> Send</button>
+                    </div>
+                </form>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+<!-- End feedback Modal -->
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+

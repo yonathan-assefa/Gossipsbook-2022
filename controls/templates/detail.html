@@ -1,0 +1,255 @@
+{% load humanize %} {% load static %}
+<section class="row">
+    <div class="mb-3 row ml-1">
+        <div>
+            {% if post.author.profile.image %}
+            <img class="rounded-circle" src="{{post.author.profile.image.url}}" alt="{{post.author.username}} image" style="width: 35px; height: 35px;">
+            {% else %}
+            <img class="rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{post.author.username}} image" style="width: 35px; height: 35px;">
+            {% endif %}
+        </div>
+  
+        <div>
+            <span class="pl-1">
+                <span> <a href="{% url 'users:user_view_profile' post.author.username %}" class="text-dark">{{post.author.username}} </a> </span> | 
+                <span><i class="fa fa-calendar"></i> {{post.date_published}} </span> | 
+                <span><i class="fa fa-comments"></i> {{post.get_total_comments.count}}</span>
+            </span>
+            {% if post.author.profile.designation %}
+            <div class="text-muted mt-2 mr-3">
+                {{post.author.profile.designation}}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="row p-3 mb-3">
+   <h4><strong>{{post.title}} </strong> </h4>
+</section>
+
+<div class="row">
+   <div class="col-5">
+   </div>
+
+   <div class="col-7">
+      <div class="progress">
+            <div class="true_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{post.percent_true}}%" aria-valuenow="{{post.percent_true}}" aria-valuemin="0" aria-valuemax="100">{{post.percent_true| floatformat:1}}%</div>
+            <div class="false_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{post.percent_false}}%" aria-valuenow="{{post.percent_false}}" aria-valuemin="0" aria-valuemax="100">{{post.percent_false| floatformat:1}}%</div>
+      </div>
+      <div class="text-right">{{post.get_total_voters}} person{{post.get_total_voters|pluralize}} voted</div>
+   </div>
+</div>
+
+{% if post.image %}
+<hr>
+<section>
+   <img class="img-fluid" src="{{post.image.url}}" alt="gossips book" style="max-height: 700px; width: 100%;">
+</section>
+<hr>
+{% endif %}
+
+
+<section class="card p-3">
+   {{post.content | linebreaks}}
+</section>
+
+
+<div class="row mt-3">
+   <div class="col ml-3 d-inline">
+       <div class="row d-inline">
+           <form class="d-inline">
+                   {% if request.user in post.true.all or request.user in post.false.all %}
+                   <button type="button" class="true_reaction_button btn btn-sm disabled">
+                       <i class="fa fa-check"></i> True
+                   </button> 
+                   {% else %}
+                   <button type="button"
+                       data-toggle="modal" 
+                       data-id="{{post.id}}" 
+                       data-action="true" 
+                       data-target="#reactionModal"
+                       onclick="reactionFunction('{{post.id}}', 'true')"   
+                       class="true_reaction_button reaction btn btn-sm btn-primary"> 
+                       <i class="fa fa-check"></i> 
+                       True
+                   </button> 
+                   {% endif %}
+           </form>
+
+           <form class="d-inline">
+               {% if request.user in post.false.all or request.user in post.true.all %}
+               <button type="button" class="false_reaction_button btn btn-sm disabled">
+                       <i class="fa fa-times"></i> False
+                   </button> 
+               {% else %}
+               <button type="button" 
+                   data-toggle="modal" 
+                   data-id="{{post.id}}" 
+                   data-action="false" 
+                   data-target="#reactionModal"
+                   onclick="reactionFunction('{{post.id}}', 'false')"  
+                   class="false_reaction_button reaction btn btn-sm btn-danger"> 
+                   <i class="fa fa-times"></i> 
+                   False
+               </button> 
+               {% endif %}
+           </form>
+       </div>
+
+       {% if request.user in post.true.all %}
+       <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+          <small>You voted true</small> 
+       </div>
+       {% elif request.user in post.false.all %}
+       <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+           <small>You voted false</small>
+       </div>
+       {% endif %}
+   </div>
+    {% static 'images/GossipsBook_logo.png' as post_image %}
+   <div class="col p-1 d-inline text-right mr-4">
+       <a href="#" 
+           data-toggle="modal"
+           {% if gossip.image %}
+           onclick="sharePostFunc('{{post.title}}','{{post.get_absolute_url}}', '{{post.image.url}}')" 
+           {% else %}
+           onclick="sharePostFunc('{{post.title}}','{{post.get_absolute_url}}', '{{post_image}}')"
+           {% endif %}
+           data-target="#shareModal"  
+           class="mr-3 share-button"> 
+           <i class="fa fa-share-alt"></i> 
+           <span class="d-none d-md-inline">Share</span> 
+       </a>
+       {% if request.user.is_authenticated %}
+       <a class="btn btn-outline-dark btn-sm rfr" href="#" data-section="{{hidden_id}}" data-toggle="modal" data-id="{{post.id}}" data-title="{{post.title}}" data-target="#rfrModal">
+           <i class="fa fa-exclamation-triangle"></i> RFR
+       </a>
+       {% endif %}
+   </div>
+</div>
+
+<hr>
+
+<section>
+   <h5 class="mb-4">Comments:</h5>
+   {% for comment in post.get_total_comments.all %}
+  <div class="mb-3 row">
+      <div>
+          {% if comment.author.profile.image %}
+         <img class="rounded-circle" src="{{comment.author.profile.image.url}}" alt="{{comment.author.username}} image" style="width: 35px; height: 35px;">
+         {% else %}
+         <img class="rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{comment.author.username}} image" style="width: 35px; height: 35px;">
+        {% endif %}
+        </div>
+
+      <div class="col-8">
+         <strong><a href="{% url 'users:user_view_profile' comment.author.username %}" class="text-dark">{{comment.author.username}}</a>  </strong>
+         <small class="text-muted ml-1">{{comment.date_published|naturaltime}}</small>
+
+          <div>
+            {{comment.content | linebreaks}}
+          </div>
+          <hr>
+      </div>
+  </div>
+  {% empty %}
+  <div class="container">
+     <h5>This post does not have any comment yet.</h5>
+     <br>
+  </div>
+   {% endfor %}
+</section>
+
+ <!-- Comments Form -->
+ <div class="card my-4">
+   <h5 class="card-header">Leave a Comment:</h5>
+   <div class="card-body">
+
+      {% if user.is_authenticated %}
+     <form action="{{comment_form_url}}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="{{hidden_id}}Id" value="{{post.id}}">
+       <div class="form-group">
+         <textarea required class="form-control" name="commentContent" rows="3" placeholder="Your comment..."></textarea>
+       </div>
+       <button type="submit" class="btn true_reaction_button"><i class="fa fa-send"></i> Submit</button>
+     </form>
+     {% else %}
+     <div class="container mt-2 p-4">
+         Would you like to comment on this gossip? Please <a href="/accounts/login">login</a>
+     </div>
+     {% endif %}
+   </div>
+ </div>
+ <!-- End Comments Form -->
+
+
+ 
+<!-- Reaction Modal -->
+<div class="modal fade" id="reactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+           <div class="row pl-5 pt-3 container">
+               <div>
+               </div>
+           </div>
+
+           {% if request.user.is_authenticated %}
+           <div class="container">
+               <p id="reactionSection"></p>
+               <p>
+                   <strong>Note that you CANNOT undo this action...</strong>
+               </p>
+           </div>
+           <form class="d-inline" action="{{reaction_url}}">
+               <input type="hidden" name="action" value="" id="action"> 
+               <input type="hidden" name="{{hidden_id}}_id" value="" id="{{hidden_id}}_id"> 
+              
+               
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">No, Go Back</button>
+                   <button class="btn btn-outline-primary"><i class="fa fa-send"></i> Yes, continue </button>
+               </div>
+           </form>
+           {% else %}
+           <div class="container mt-2 p-4">
+               Would you like to vote on this gossip? Please <a href="/accounts/login">login</a>
+           </div>
+           {% endif %}
+       </div>
+   </div>
+</div>
+<!-- End reaction Modal -->
+
+
+
+<!-- RFR Modal -->
+<div class="modal fade" id="rfrModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+           <div class="container">
+               <div class="modal-body">
+                  <h5>Why do you want to Request For Removal (RFR) of this post?</h5>
+               </div>
+                
+              {% if request.user.is_authenticated %}
+               <form method="POST" action="{% url 'controls:rfr' %}">
+                  <textarea required class="form-control" name="reason" id="rfr_form" cols="30" rows="5" placeholder="State your reason here and we will consider it"></textarea>
+                  <input type="hidden" name="section" id="section">
+                  <input type="hidden" name="post_id" id="post_id">
+                  {% csrf_token %}
+                  
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Go Back</button>
+                    <button class="btn btn-sm true_reaction_button"><i class="fa fa-send"></i> Submit </button>
+                   </div>
+                </form>
+                {% endif %}
+
+               <br>
+           </div>
+       </div>
+   </div>
+</div>
+<!-- End RFR Modal -->

@@ -1,0 +1,40 @@
+<script type="text/javascript">
+	function sharePostFunc(title, url, image='http://s3.amazonaws.com/37assets/svn/765-default-avatar.png') {
+	        
+	        // let postUrl = encodeURI(document.location.href);
+	        let postImg = encodeURI(image);
+	        let postTitle = encodeURI(title);
+	        let postUrl = encodeURI(location.host + url);
+	        let facebookUrl = "https://www.facebook.com/sharer.php?u="+postUrl;
+	        let twitterUrl = "https://www.twitter.com/share?url="+postUrl+"&text="+postTitle;
+	        let linkedinUrl = "https://www.linkedin.com/shareArticle?url="+postUrl+"&title="+postTitle;
+	        // let whatsappUrl = "https://www.wa.me/?text="+postTitle + postUrl;
+	        let pinterestUrl = "https://www.pinterest.com/pin/create/bookmarklet/?media="+postImg+"&url="+postUrl+"&description="+postTitle;
+
+	        const facebookButton = $(".facebook-button"); 
+	        const twitterButton = $(".twitter-button"); 
+	        const pinterestButton = $(".pinterest-button"); 
+	        // const whatsappButton = $(".whatsapp-button"); 
+	        const linkedinButton = $(".linkedin-button");
+
+	        //pinterestButton.attr("href", pinterestUrl); 
+	        facebookButton.attr("href", facebookUrl); 
+	        twitterButton.attr("href", twitterUrl); 
+	        linkedinButton.attr("href", linkedinUrl); 
+	        pinterestButton.attr("href", pinterestUrl); 
+	        // whatsappButton.attr("href", whatsappUrl); 
+
+	        
+	        // alert(pinterestButton);
+
+	       // facebook = https://www.facebook.com/sharer.php?u=${postUrl}
+
+	       // pinterest = https://www.pinterest.com/pin/create/bookmarklet/?media=${postImg}&url=${postUrl}&description=${postTitle}
+
+	       /// twitter = https://www.twitter.com/share?url=${postUrl}&text=${postTitle}
+
+	       // linkedin = https://www.linkedin.com/shareArticle?url=${postUrl}&title=${postTitle}
+
+	       // whatsapp = https://www.wa.me/?text=${postTitle} ${postUrl}
+	    }
+</script>

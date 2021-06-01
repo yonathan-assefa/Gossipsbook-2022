@@ -1,0 +1,114 @@
+{% load humanize %} 
+{% load static %} 
+
+{% for cheater in cheaters %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h6 class="card-title">
+            <div class="mb-3 row ml-1">
+                <div>
+                    {% if cheater.author.profile.image %}
+                   <img class="img-fluid rounded-circle" src="{{cheater.author.profile.image.url}}" alt="{{cheater.author.username}} image" style="width: 35px; height: 35px;">
+                   {% else %}
+                   <img class="img-fluid rounded-circle" src="{% static 'images/default_profile_pic2.png' %}" alt="{{cheater.author.username}} image" style="width: 35px; height: 35px;">
+                    {% endif %}
+                </div>
+          
+                <div class="col-8">
+                   <strong><a href="{% url 'users:user_view_profile' cheater.author.username %}" class="text-dark">{{cheater.author.username}}</a>  </strong>
+                   <small class="text-muted ml-1">{{cheater.date_published|naturaltime}}</small>
+                   {% if cheater.author.profile.designation %}
+                   <div class="text-muted mt-2 mr-3">
+                       {{cheater.author.profile.designation}}
+                   </div>
+                   {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+
+                </div>
+
+                <div class="col">
+                    <div class="progress">
+                        <div class="true_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{cheater.percent_true}}%" aria-valuenow="{{cheater.percent_true}}" aria-valuemin="0" aria-valuemax="100">{{cheater.percent_true| floatformat:1}}%</div>
+                        <div class="false_reaction_button progress-bar progress-bar-striped" role="progressbar" style="width: {{cheater.percent_false}}%" aria-valuenow="{{cheater.percent_false}}" aria-valuemin="0" aria-valuemax="100">{{cheater.percent_false| floatformat:1}}%</div>
+                    </div>
+                    <div class="text-right">{{cheater.get_total_voters}} person{{cheater.get_total_voters|pluralize}} voted</div>
+                </div>
+            </div>
+
+
+        </h6>
+        <a href="{% url 'cheaters:cheater_detail' cheater.slug %}" class="text-dark">
+            <span>
+                <h6> <strong>{{cheater.title|truncatewords:30}}</strong> </h6>
+                <p class="card-text"> {{cheater.content | linebreaks | truncatewords:155}} </p>
+            </span>
+        </a> 
+    </div>
+
+    {% if cheater.image %}
+    <img class="card-img-bottom" style="max-height:420px;" src="{{cheater.image.url}}" alt="{{cheater.title}}'s image"> 
+    {% endif %}
+
+    <div class="row">
+        <div class="col m-2 ml-5 d-inline">
+            <div class="row d-inline">
+                <form class="d-inline">
+                    {% if user in cheater.true.all or user in cheater.false.all %}
+                    <button type="button" class="true_reaction_button btn btn-sm disabled">
+                        <i class="fa fa-check"></i> True
+                    </button> 
+                    {% else %}
+                    <button type="button"
+                        data-toggle="modal" 
+                        data-id="{{cheater.id}}" 
+                        data-action="true" 
+                        data-target="#reactionModal"  
+                        class="true_reaction_button reaction btn btn-sm btn-primary"> 
+                        <i class="fa fa-check"></i> True
+                    </button> 
+                    {% endif %}
+                </form>
+
+                <form class="d-inline">
+                    {% if user in cheater.false.all or user in cheater.true.all %}
+                    <button type="button" class="false_reaction_button btn btn-sm disabled">
+                        <i class="fa fa-times"></i> False
+                    </button> 
+                    {% else %}
+                    <button type="button"
+                        data-toggle="modal" 
+                        data-id="{{cheater.id}}" 
+                        data-action="false" 
+                        data-target="#reactionModal"  
+                        class="false_reaction_button reaction btn btn-sm btn-danger"> 
+                        <i class="fa fa-times"></i> False
+                    </button> 
+                    {% endif %}
+                </form>
+            </div>
+
+            {% if user in cheater.true.all %}
+            <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+               <small>You voted true</small> 
+            </div>
+            {% elif user in cheater.false.all %}
+            <div style="color: #FF9933; margin-left: -10px;" class="text-small">
+                <small>You voted false</small>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col m-2 p-1 d-inline text-right mr-4">
+            <a href="{% include 'share_link.html' %}" data-toggle="modal" data-target="#shareModal" class="mr-3"> <i class="fa fa-share-alt"></i> <span class="d-none d-md-inline">Share</span></a>
+            <a href="#" class="comment" data-toggle="modal" data-id="{{cheater.id}}" data-title="{{cheater.title}}" data-target="#commentModal">
+                <i class="fa fa-comment"></i> <span class="d-none d-md-inline">Comment </span>  ({{cheater.get_total_comments.count}})
+            </a>
+        </div>
+    </div>
+</div>
+{% empty %}
+
+{% endfor %}

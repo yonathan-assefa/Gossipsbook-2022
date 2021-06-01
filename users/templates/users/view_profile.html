@@ -1,0 +1,405 @@
+<!doctype html> {% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Bala">
+    <meta name="description" content="Gossip Books">
+    <meta name="keywords" content="Gossip Books, answers">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    <title>{{user.username}}'s Profile | Gossip Books </title>
+    <style>
+        .card-text {
+            border-bottom: 1px solid rgb(219, 213, 213);
+            padding-bottom: 3px;
+        }
+        
+        .active_section {
+            background-color: #FF9933;
+            border: #FF9933;
+            color: white;
+        }
+
+        .bs-example{
+        margin: 5px;
+        }
+        .accordion .fa{
+            margin-right: 0.5rem;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            top: 2px;
+        }
+    </style>
+
+    <script>
+        // JQuery logic for answer's accordion
+        $(document).ready(function(){
+            // Add down arrow icon for collapse element which is open by default
+            $(".collapse.show").each(function(){
+                $(this).prev(".card-header").find(".fa").addClass("fa-angle-down").removeClass("fa-angle-right");
+            });
+            
+            // Toggle right and down arrow icon on show hide of collapse element
+            $(".collapse").on('show.bs.collapse', function(){
+                $(this).prev(".card-header").find(".fa").removeClass("fa-angle-right").addClass("fa-angle-down");
+            }).on('hide.bs.collapse', function(){
+                $(this).prev(".card-header").find(".fa").removeClass("fa-angle-down").addClass("fa-angle-right");
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+     <div class="mb-5">
+        <!-- Navigation -->
+          {% block navigation %}
+            {% include 'navigation.html' %}
+          {% endblock navigation %}
+        <!-- End Navigation -->
+    </div>
+    <div class="container image-container">
+        <div class="row">
+            {% if user_profile.profile.image %}
+            <img class="img-fluid profile_hero" src="{{user_profile.profile.image.url}}" alt="{{user_profile.username}}'s image">
+            {% else %}
+            <img class="img-fluid profile_hero" src="{% static 'images/default_profile_pic2.png' %}" alt="{{user_profile.username}}'s image">
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <section class="col-4">
+                <div class="card profile_image">
+                    {% if user_profile.profile.image %}
+                    <img class="card-img-top" src="{{user_profile.profile.image.url}}" alt="{{user_profile.username}} profile image">
+                    {% else %}
+                    <img class="card-img-top" src="{% static 'images/default_profile_pic2.png' %}" alt="{{user_profile.username}} profile image">
+                    {% endif %}
+                    <div class="card-body pt-2">
+                        {% if not request.user == user_profile %}
+                        {% if request.user in user_profile.profile.followers.all %}
+                        <a href="{% url 'users:follow_user' user_profile.username %}" class="btn btn-outline-light btn-sm btn-block follow-button mb-3"><i class="fa fa-user-minus"></i> Unfollow</a>
+                        {% else %}
+                        <a href="{% url 'users:follow_user' user_profile.username %}" class="btn btn-outline-light btn-sm btn-block follow-button mb-3"><i class="fa fa-user-plus"></i> Follow</a>
+                        {% endif %}
+                        {% endif %}
+                        <p class="card-text">Meet {{request.user.username}}: {{user_profile.profile.bio}}</p>
+                        <p class="card-text">Designation: {{user_profile.profile.designation}}</p>
+                        <p class="card-text">Location: {{user_profile.profile.location}}</p>
+                        <p class="card-text">Languages: {{user_profile.profile.languages}}</p>
+                        <p>Interests: 
+                            {% for interest in user_profile.profile.interests.all %}
+                            {{ interest.title }} {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+
+
+                        {% if request.user == user_profile %}
+                        <p>
+                            <a class="p-0 m-0" href="{% url 'users:user_profile' %}"> Edit Profile</a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-8 mt-4 pl-5">
+
+                <!-- PROFILE DETAIL FOR MD SCREEN SIZE -->
+                <div class="d-none d-md-inline">
+                    <div class="row">
+                        <div class="col-4">
+                            {{user_profile.username}}
+                            <br>
+                            <i class="fa fa-map-marker"></i> {{user_profile.profile.location}}
+                        </div>
+                        {% if request.user.username != user_profile.username %}
+                        <div class="col-4">
+                            <a href="#" class="btn btn-outline-dark"><i class="fa fa-send"></i> Send Message</a>
+                        </div>
+                        {% endif %}
+                        <div class="col-4">
+                            <a href="#" 
+                                data-toggle="modal" 
+                                data-target="#shareModal"
+                                {% if user_profile.profile.image %}
+                                onclick="sharePostFunc('{{user_profile.username}}','/', '{{user_profile.profile.image.url}}')" 
+                                {% else %}
+                                onclick="sharePostFunc('{{user_profile.username}}','/', '')" 
+                                {% endif %}
+                                class="btn btn-outline-dark">
+                                <i class="fa fa-share-alt"></i> Share Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFILE DETAIL FOR SM SCREEN SIZE -->
+                <div class="d-sm-inline d-md-none">
+                    <div class="row">
+                        <div class="col-7">
+                            {{user_profile.username}}
+                            <br>
+                            <i class="fa fa-map-marker"></i> {{user_profile.profile.location}}
+                        </div>
+                        {% if not request.user.is_authenticated %}
+                        <div class="col-2">
+                            <a href="#"><i class="fa fa-send"></i></a>
+                        </div>
+                        {% endif %}
+                        <div class="col-2">
+                            <a href="#" 
+                                data-toggle="modal" 
+                                data-target="#shareModal"
+                                {% if user_profile.profile.image %}
+                                onclick="sharePostFunc('{{user_profile.username}}','/', '{{user_profile.profile.image.url}}')" 
+                                {% else %}
+                                onclick="sharePostFunc('{{user_profile.username}}','/', '')" 
+                                {% endif %}
+                                class="btn btn-outline-dark">
+                                <i class="fa fa-share-alt"></i> Share Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <section>
+                    
+                    <div class="row mt-5 justify-content-center">
+                        <div class="btn btn-outline-dark btn-sm m-2" id="questionsButton">
+                            Questions
+                        </div>
+
+                        <div class="btn btn-outline-dark btn-sm m-2" id="gossipsButton">
+                            Gossips
+                        </div>
+
+                        <div class="btn btn-outline-dark btn-sm m-2" id="cheatersButton">
+                            Cheaters
+                        </div>
+
+                        <div class="btn btn-outline-dark btn-sm m-2" id="answersButton">
+                            Answers
+                        </div>
+
+                        {% if request.user.username == user_profile.username %}
+                        <div class="btn btn-outline-dark btn-sm m-2">
+                            Followers ({{followers.count}})
+                        </div>
+
+                        <div class="btn btn-outline-dark btn-sm m-2">
+                           Following ({{following.count}})
+                        </div>
+                        {% endif %}
+
+                        {% if request.user.username != user_profile.username %}
+                        <div class="btn btn-outline-dark btn-sm m-2">
+                            <a href="{% url 'users:follow_user' user_profile.username %}" class="text-dark">
+
+                                {% if request.user in followers.all %}
+                                    UnFollow
+                                {% else %}
+                                    <i class="fa fa-user-plus"></i> Follow
+                                {% endif %} 
+
+                                ({{followers.count}})
+
+                            </a>
+                        </div>
+
+                        <div class="btn btn-outline-dark btn-sm m-2">
+                           Following ({{following.count}})
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </section>
+
+                <hr>
+                <main class="detailSection" id="questionsList">
+                    {% for question in user_questions %}
+                    <div class="card mb-2 p-2">   
+                        <div class="card-body p-1"><a href="{% url 'questions:question_detail' question.slug %}">{{question.title}}</a> </div> 
+                    </div>
+                    {% endfor %}
+                </main>
+
+                <main class="detailSection" id="gossipsList">
+                    <div class="bs-example">
+                        <div class="accordion" id="accordionExample">
+                            {% for gossip in user_gossips %}
+                            <div class="bs-example">
+                                <div class="accordion" id="accordionExample">
+                                    <div class="card">
+                                        <div class="card-header" id="gossips{{gossip.id}}">
+                                            <h2 class="mb-0">
+                                                <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#gossip{{gossip.id}}"><i class="fa fa-angle-right"></i> {{gossip.title}}</button>									
+                                            </h2>
+                                        </div>
+                                        <div id="gossip{{gossip.id}}" class="collapse" aria-labelledby="gossips{{gossip.id}}" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <p>{{gossip.content}} 
+                                                    
+                                                    <a href="{{gossip.get_absolute_url}}"> view details...</a>
+                                                
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </main>
+
+                <main class="detailSection" id="cheatersList">
+                    <div class="bs-example">
+                        <div class="accordion" id="accordionExample">
+                            {% for cheater in user_cheaters %}
+                            <div class="bs-example">
+                                <div class="accordion" id="accordionExample">
+                                    <div class="card">
+                                        <div class="card-header" id="cheaters{{cheater.id}}">
+                                            <h2 class="mb-0">
+                                                <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#cheater{{cheater.id}}"><i class="fa fa-angle-right"></i> {{cheater.title}}</button>									
+                                            </h2>
+                                        </div>
+                                        <div id="cheater{{cheater.id}}" class="collapse" aria-labelledby="cheaters{{cheater.id}}" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <p>{{cheater.content}} <a href="{{cheater.get_absolute_url}}"> view details...</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </main>
+
+                <main class="detailSection" id="answersList">
+                    <div class="bs-example">
+                        <div class="accordion" id="accordionExample">
+                            {% for answer in user_answers %}
+                            <div class="card">
+                                <div class="card-header" id="heading{{answer.id}}">
+                                    <h2 class="mb-0">
+                                        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{answer.id}}"><i class="fa fa-angle-right"></i> {{answer.question.title}}?</button>									
+                                    </h2>
+                                </div>
+                                <div id="collapse{{answer.id}}" class="collapse" aria-labelledby="heading{{answer.id}}" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <p>{{answer.content}} <a href="{{answer.question.get_absolute_url}}">see question...</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </main>
+            </section>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                  <div class="container">
+                  <h6>Share on:</h6>
+                    <div class="row justify-content-center share-button-container">
+                      <!-- <img style="height:50px; width:50px;" class="img-fluid rounded-circle mr-4" src="{% static 'images/default_profile_pic.png' %}"> -->
+
+                      <a href="" class="facebook-button">
+                        <i class="fa fa-facebook-f"></i>
+                      </a>
+
+                      <a href="#" class="twitter-button">
+                        <i class="fa fa-twitter"></i>
+                      </a>
+
+                      <a href="#" class="pinterest-button">
+                        <i class="fa fa-pinterest-p"></i>
+                      </a>
+
+                      <a href="#" class="linkedin-button">
+                        <i class="fa fa-linkedin"></i>
+                      </a>
+
+                      <!-- <a href="#" class="whatsapp-button">
+                        <i class="fa fa-whatsapp"></i>
+                      </a> -->
+                    </div>
+                  </div>
+                  </br>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-dark" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End share Modal -->
+
+
+    {% include 'scripts.html' %}
+
+<script>
+    // logic to hide sections on page load, then display only the gossips section
+    // then hides and shows different sections upon button click.
+
+    $('.detailSection').hide();
+    $('#gossipsButton').addClass('active_section');
+    $('#gossipsList').show(); 
+        
+    $('#gossipsButton').on('click', function() {
+        $('.detailSection').hide();
+        $('#questionsButton').removeClass('active_section');
+        $('#cheatersButton').removeClass('active_section');
+        $('#answersButton').removeClass('active_section');
+        $('#gossipsButton').addClass('active_section');
+        $('#gossipsList').show();     
+    });
+
+    $('#cheatersButton').on('click', function() {
+        $('.detailSection').hide();
+        $('#questionsButton').removeClass('active_section');
+        $('#gossipsButton').removeClass('active_section');
+        $('#answersButton').removeClass('active_section');
+        $('#cheatersButton').addClass('active_section');
+        $('#cheatersList').show();     
+    });
+
+    $('#questionsButton').on('click', function() {
+        $('.detailSection').hide();
+        $('#gossipsButton').removeClass('active_section');
+        $('#cheatersButton').removeClass('active_section');
+        $('#answersButton').removeClass('active_section');
+        $('#questionsButton').addClass('active_section');
+        $('#questionsList').show();     
+    });
+
+    $('#answersButton').on('click', function() {
+        $('.detailSection').hide();
+        $('#gossipsButton').removeClass('active_section');
+        $('#cheatersButton').removeClass('active_section');
+        $('#questionsButton').removeClass('active_section');
+        $('#answersButton').addClass('active_section');
+        $('#answersList').show();     
+    });
+</script>
+{% include 'social_share.html' %}
+</body>
+</html>

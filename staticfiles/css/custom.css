@@ -1,0 +1,266 @@
+body {
+    background-color: #F1F2F2;
+    font-family: Bebas Neue;
+}
+
+
+/* NAVBAR CUSTOMIZATION */
+
+.navbar {
+    min-height: 50px;
+    background-color: #FF9933;
+    box-shadow: 0px 4px 5px grey;
+}
+
+.navbar a {
+    font-size: 20px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: white;
+}
+
+.navbar-light .navbar-nav .active>.nav-link,
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .nav-link.show,
+.navbar-light .navbar-nav .show>.nav-link {
+    color: white;
+}
+
+.active {
+    padding-top: 0px;
+    border-bottom: 1px solid white;
+}
+
+.navbar-brand {
+    padding: 0 10px;
+    height: 50px;
+    line-height: 50px;
+}
+
+.navbar-toggle {
+    /* (80px - button height 34px) / 2 = 23px */
+    margin-top: 23px;
+    padding: 5px 3px !important;
+}
+
+
+/* END NAVBAR CUSTOMIZATION */
+
+
+/* Pagination CUSTOMIZATION */
+
+.page-item.active .page-link {
+    background-color: #FF9933;
+    border: 1px solid #FF9933;
+    color: white;
+}
+
+li.page-item {
+    color: #FF9933;
+}
+
+.page-link {
+    color: #FF9933;
+}
+
+
+/* End pagination */
+
+
+/* register login page */
+
+.bg {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url("../images/register_bg.jpg");
+    /* Set a specific height */
+    height: 100%;
+    width: 100%;
+    /* Position and center the image to scale nicely on all screens */
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+
+/* end register login page */
+
+
+/* signin page */
+
+#signup {
+    width: 100%;
+}
+
+@media only screen and (max-width: 678px) {
+    #signup {
+        width: 100%;
+    }
+    /* end signin page */
+    /* custom checkbox */
+    /* end custom checkbox */
+}
+
+
+/* customize view profile */
+
+.image-container {
+    position: relative;
+}
+
+.profile_hero {
+    width: 100%;
+    height: 400px;
+}
+
+.profile_image {
+    position: absolute;
+    width: 100%;
+    top: -250px;
+}
+
+@media only screen and (max-width: 991px) {
+    .profile_hero {
+        height: 250px;
+    }
+    .profile_image {
+        position: absolute;
+        top: -90px;
+    }
+}
+
+@media only screen and (max-width: 678px) {
+    .profile_hero {
+        height: 150px;
+    }
+    .profile_image {
+        position: absolute;
+        top: -100px;
+    }
+}
+
+@media only screen and (max-width: 290px) {
+    .profile_hero {
+        height: 100px;
+    }
+    .profile_image {
+        position: absolute;
+        top: -60px;
+    }
+}
+
+
+/* end customize view profile */
+
+
+/* customize follow button 
+
+.follow-button {
+    position: relative;
+    text-align: center;
+    top: 90px;
+    border-radius: 25px;
+    background-color: white;
+    border: 2px solid#FF9933;
+    width: 65%;
+    font-size: 23px;
+}
+
+.follow-button a {
+    color: #FF9933;
+}
+
+@media only screen and (max-width: 1200px) {
+    .follow-button {
+        top: 50px;
+        border-radius: 5px;
+        width: 100%;
+        font-size: 15px;
+        left: 12px;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .follow-button {
+        top: 120px;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .follow-button {
+        top: 60px;
+    }
+}
+
+@media only screen and (max-width: 470px) {
+    .follow-button {
+        top: -3px;
+        border: 1px solid#FF9933;
+    }
+}
+
+
+/* end customize follow button 
+
+*/
+
+
+/* customize follow button */
+
+.follow-button {
+    background-color: white;
+    border: 1px solid #FF9933;
+    color: #FF9933;
+}
+
+
+/* end customize follow button */
+
+.profile_details {
+    box-shadow: 0px 4px 5px grey;
+}
+
+/* cutomizing the false and true button */
+.false_reaction_button{
+    background-color: #138808;
+    color: white;
+    border-color: #138808;
+}
+
+.true_reaction_button{
+    background-color: #FF9933;
+    color: white;
+    border-color: #FF9933;
+}
+
+/* share button styling*/
+div.row.justify-content-center.share-button-container a i{
+    font-size: 32px;
+}
+
+div.row.justify-content-center.share-button-container a{
+    padding: 20px;
+    margin: 12px 0;
+    color: #FF9933;
+    transition: 500ms;
+}
+div.row.justify-content-center.share-button-container a:hover{
+    color: #000;
+    transform: scale(1.4);
+}
+i.fa.fa-facebook-f{
+    color: #3b5998;
+}
+i.fa.fa-twitter{
+    color: #1da1f2;
+}
+i.fa.fa-pinterest-p{
+    color: #bd081c;
+}
+i.fa.fa-linkedin{
+    color: #0077b5;
+}
+i.fa.fa-whatsapp{
+    color: #25d366;
+}

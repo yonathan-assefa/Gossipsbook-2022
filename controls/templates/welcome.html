@@ -1,0 +1,72 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Bala">
+    <meta name="description" content="Gossip Books">
+    <meta name="keywords" content="Gossip Books, answers">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+    <title>Welcome to Gossip Books </title>
+
+    <style>
+    .checkbox-1x {
+        transform: scale(1.5);
+        -webkit-transform: scale(1.5);
+    }
+    /* .checkbox-2x {
+        transform: scale(2);
+        -webkit-transform: scale(2);
+    } */
+    li{
+        display: inline;
+    }
+    </style>
+</head>
+<body>
+    <section class="container mt-5 mb-5">
+        <div class="bg-light d-none d-md-block p-4">
+            <h2>What are your interests?</h2>
+            <hr>
+            <p style="font-size:18px;">
+                Whatever you're interested in, GossipsBook has it all. If you tell us what interests you, we'll be able to
+                curate your experience.
+            </p>
+        </div>
+
+        <div class="bg-light d-md-none p-3">
+            <h3>What are your interests?</h3>
+            <hr>
+            <p style="font-size:15px;">
+                Whatever you're interested in, GossipsBook has it all. If you tell us what interests you, we'll be able to
+                curate your experience.
+            </p>
+        </div>
+        <div class="p-5">
+            <form method="POST">
+                <div class="row">
+                    {% for interest in interests %}
+                    <div class="col-4">
+                        <label for="interest_{{interest.id}}"> 
+                            <input type="checkbox" {% if interest in request.user.profile.interests.all %} checked {% endif %} name="interests" value="{{interest.id}}" id="interest_{{interest.id}}" class="m-3 checkbox-1x">
+                            {{interest.title}} 
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>    
+                <button type="submit" class="btn btn-block btn-outline-dark">Continue &rarr;</button>
+                {% csrf_token %}
+            </form>
+        </div>
+    </section>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+</html>
