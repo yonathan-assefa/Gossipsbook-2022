@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.urls import path, include
+from django.conf.urls import url
 from .views import GossipViews, ControlsViews, UserViews
 
 urlpatterns = [
@@ -19,6 +20,8 @@ urlpatterns = [
     path("feedback/retrieve/<feedback_id>/", ControlsViews.FeedbackRetrieveAPIView.as_view(), ),
 
     path("user/auth/registration/", UserViews.UserRegistrationView.as_view(), ),
+    path("user/auth/password-reset/", UserViews.UserSendMailGeneratorAPIView.as_view(), ),
+    path("user/auth/password-reset/confirm-token/", UserViews.UserTokenConfirmAPIView.as_view(), ),
 
     path("current-user/profile/retrieve/", UserViews.CurrentUserProfileRetrieveAPIView.as_view(), ),
     path("current-user/profile/update/", UserViews.CurrentUserProfileUpdateAPIView.as_view(), ),

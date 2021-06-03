@@ -4,11 +4,12 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from users.models import Profile, Interests, Qualification, WorkExperience
+from ..models import RestToken
 
 
 class UserRegistrationSerializer(ModelSerializer):
-    password1 = serializers.CharField()
-    password2 = serializers.CharField()
+    password1 = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
 
     class Meta:
         model = User
@@ -151,3 +152,32 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = ["username", "email", "first_name", "last_name", "profile"]
 
+
+class RestTokenSerializer(ModelSerializer):
+    password = serializers.CharField(required=True)
+
+    class Meta:
+        model = RestToken
+        fields = ["token", "password"]
+
+    def validate_token(self, value):
+        qs = RestToken.objects.filter(token=value)
+        if qs.exists():
+            if not qs.filter(expired=False).exists():
+                raise serializers.ValidationError("The Token has been Expired...")
+                
+            return value
+
+        raise serializers.ValidationError("This is not a Valid Token...")
+
+
+class UserEmailPasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, value):
+        print(value)
+        qs = User.objects.filter(email=value)
+        if qs.exists():
+            return value
+
+        raise serializers.ValidationError("No User is registered with this User...")

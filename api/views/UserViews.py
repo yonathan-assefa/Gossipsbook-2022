@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from .. import pagination
 from .. import permissions
+from ..models import RestToken
 
 
 def get_object_or_rest_404(klass, msg="NotFound", **kwargs):
@@ -238,4 +239,55 @@ class CurrentUserProfileAddInterestAPIView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class UserSendMailGeneratorAPIView(CreateAPIView):
+    serializer_class = UserSerializers.UserEmailPasswordResetSerializer
+
+    def get_queryset(self):
+        pass
+
+    def perform_create(self, serializer):
+        data = serializer.validated_data
+        email = data.get("email")
+        try:
+            user_obj = User.objects.get(email=email)
+            token = RestToken.objects.create(user=user_obj)
+            return token 
+        except:
+            raise ValidationError("Something Went Wrong While Sending mail...")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response = {
+            'status': 'success',
+            'code': status.HTTP_200_OK,
+            'message': 'An Email Has been sent',
+        }
+        return Response(response)
+
+
+class UserTokenConfirmAPIView(CreateAPIView):
+    serializer_class = UserSerializers.RestTokenSerializer
+
+    def perform_create(self, serializer):
+        data = serializer.validated_data
+        token = data.get("token")
+        password = data.get("password")
+        token_obj = RestToken.objects.get(token=token)
+        user = token_obj.user
+        user.set_password(password)
+        print(user)
+        # user.save()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response = {
+            'status': 'success',
+            'code': status.HTTP_200_OK,
+            'message': 'The Password Has been Set...',
+        }
+        return Response(response)
 

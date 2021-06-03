@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/", include("api.urls")),
     path("api/authentication/token/", get_token.CustomAuthToken.as_view(), ),
+    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path('', include('controls.urls', namespace='controls')),
 ]
 
