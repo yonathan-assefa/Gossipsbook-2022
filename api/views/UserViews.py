@@ -250,10 +250,11 @@ class UserSendMailGeneratorAPIView(CreateAPIView):
         email = data.get("email")
         try:
             user_obj = User.objects.get(email=email)
-            token = RestToken.objects.create(user=user_obj)
-            return token 
+            token = RestToken.objects.create(user=user_obj) 
         except:
             raise ValidationError("Something Went Wrong While Sending mail...")
+
+        return token
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -278,7 +279,9 @@ class UserTokenConfirmAPIView(CreateAPIView):
         user = token_obj.user
         user.set_password(password)
         print(user)
-        # user.save()
+        user.save()
+        token_obj.expired = True
+        token_obj.save()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
