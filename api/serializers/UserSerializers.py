@@ -6,6 +6,35 @@ from django.contrib.auth.models import User
 from users.models import Profile, Interests, Qualification, WorkExperience
 
 
+class UserRegistrationSerializer(ModelSerializer):
+    password1 = serializers.CharField()
+    password2 = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2"]
+
+    def validate_value(self, value):
+        value = str(value)
+        if "@" not in value:
+            raise serializers.ValidationError("Please Provide a Correct Email...")
+
+        return value
+
+    def validate(self, data):
+        if str(data["password1"]) != str(data["password2"]):
+            print("Here..")
+            raise serializers.ValidationError("The Two Password Field Did not Match...")
+        
+        email = data["email"]
+        qs = User.objects.filter(email=email)
+        if qs.exists():
+            print("Ea Here...")
+            raise serializers.ValidationError("Email Already exists...")
+
+        return data
+
+
 class OnlyUserSerializer(ModelSerializer):
 
     class Meta:

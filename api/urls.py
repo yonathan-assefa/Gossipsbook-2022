@@ -18,6 +18,8 @@ urlpatterns = [
     path("feedback/list-create/", ControlsViews.FeedbackListCreateAPIView.as_view(), ),
     path("feedback/retrieve/<feedback_id>/", ControlsViews.FeedbackRetrieveAPIView.as_view(), ),
 
+    path("user/auth/registration/", UserViews.UserRegistrationView.as_view(), ),
+
     path("current-user/profile/retrieve/", UserViews.CurrentUserProfileRetrieveAPIView.as_view(), ),
     path("current-user/profile/update/", UserViews.CurrentUserProfileUpdateAPIView.as_view(), ),
     path("user/retrieve/<username>/", UserViews.UserRetrieveAndUpdatePropertyAPIView.as_view(), ),
@@ -25,6 +27,7 @@ urlpatterns = [
     path("current-user/Interests/list-create/", UserViews.CurrentUserProfileAddInterestAPIView.as_view(), ),
     path("current-user/profile/experiences/", UserViews.UserProfileWorkExperienceListCreateAPIView.as_view(), ),
     path("current-user/profile/qualifications/", UserViews.UserProfileQualificationListCreateAPIView.as_view(), ),
+    
     path("interest/list/", UserViews.InterestListAPIView.as_view(), ),
 
 ]

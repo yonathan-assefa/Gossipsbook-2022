@@ -11,6 +11,7 @@ from ..serializers import UserSerializers, GossipSerializers
 from rest_framework import status
 from rest_framework.response import Response
 from .. import pagination
+from .. import permissions
 
 
 def get_object_or_rest_404(klass, msg="NotFound", **kwargs):
@@ -19,6 +20,43 @@ def get_object_or_rest_404(klass, msg="NotFound", **kwargs):
         return qs.get()
 
     raise NotFound(msg)
+
+
+class UserRegistrationView(CreateAPIView):
+    serializer_class = UserSerializers.UserRegistrationSerializer
+    permission_classes = [permissions.IsCurrentUserNotAuthenticated, ]
+
+    def get_queryset(self):
+        pass
+
+    def perform_create(self, serializer):
+        try:
+            valid_data = serializer.validated_data
+        except:
+            raise ValidationError("Illegal Data Provided...")
+
+        username = valid_data.get("username")
+        email = valid_data.get("email")
+        password1 = valid_data.get("password1")
+        password2 = valid_data.get("password2")
+
+        if str(password1) != str(password2):
+            raise ValidationError("The Two Password Field did not Match...")
+
+        user_obj = User(username=username, email=email)
+        user_obj.set_password(password2)
+        user_obj.save()
+        serializer = UserSerializers.OnlyUserSerializer(user_obj)
+        return serializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer = self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 
 class CurrentUserProfileUpdateAPIView(RetrieveUpdateDestroyAPIView):
