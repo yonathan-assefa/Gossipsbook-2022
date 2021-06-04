@@ -3,6 +3,7 @@ from django.utils import timezone
 from random import choice
 from string import ascii_letters
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 
 def create_token(number=8):
@@ -24,7 +25,16 @@ class RestToken(models.Model):
         return True
 
     def save(self, *args, **kwargs):
+        new_token = create_token()
+        user_email = self.user.email
         if not self.token:
-            self.token = create_token()
+            self.token = new_token
+
+        send_mail(
+            "Reset Password",
+            f"Your Reset Token is {new_token}",
+            "gossipsbook.in@gmail.com",
+            [user_email, ]
+        )
 
         return super().save(*args, **kwargs)

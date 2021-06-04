@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from .. import pagination
 from .. import permissions
 from ..models import RestToken
+from smtplib import SMTPAuthenticationError
 
 
 def get_object_or_rest_404(klass, msg="NotFound", **kwargs):
@@ -251,6 +252,8 @@ class UserSendMailGeneratorAPIView(CreateAPIView):
         try:
             user_obj = User.objects.get(email=email)
             token = RestToken.objects.create(user=user_obj) 
+        except SMTPAuthenticationError:
+            raise ValidationError("The Authentication Credentials for sending email is not Valid...")
         except:
             raise ValidationError("Something Went Wrong While Sending mail...")
 
