@@ -22,7 +22,7 @@ def get_object_or_rest_404(klass, msg="NotFound", **kwargs):
 
 class GossipsListCreateAPIView(ListCreateAPIView):
     serializer_class = GossipSerializers.GossipListCreateSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticated, ]
     pagination_class = Results20SetPagination
 
     def get_queryset(self):
@@ -109,7 +109,7 @@ class GossipUpdateAPIView(RetrieveUpdateDestroyAPIView):
 class GossipsVoteAPIView(ListCreateAPIView):
     serializer_class = GossipSerializers.UserLeastInfoSerializer
     lookup_url_kwarg = "gossip_slug"
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticated, ]
     pagination_class = Results20SetPagination
 
     def get_queryset(self):
@@ -168,6 +168,7 @@ class GossipsVoteAPIView(ListCreateAPIView):
 class GossipAddTagAPIView(ListCreateAPIView):
     serializer_class = GossipSerializers.TagSerializer
     lookup_url_kwarg = "gossip_slug"
+    permission_classes = [IsAuthenticated, ]
 
     def get_gossip(self):
         slug = self.kwargs.get(self.lookup_url_kwarg)
@@ -204,7 +205,7 @@ class GossipAddTagAPIView(ListCreateAPIView):
 class CommentListCreateAPIView(ListCreateAPIView):
     serializer_class = GossipSerializers.CommentSerializer
     lookup_url_kwarg = "gossip_slug"
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticated, ]
     pagination_class = Results20SetPagination
 
     def get_queryset(self):
@@ -224,7 +225,7 @@ class CommentListCreateAPIView(ListCreateAPIView):
 
 class CommentRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = GossipSerializers.CommentRetrieveSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticated, ]
     lookup_url_kwarg = "gossip_slug"
     comment_id = "cmnt_id"
 

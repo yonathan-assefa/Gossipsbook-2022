@@ -28,7 +28,7 @@ def get_slug(self):
 class FalseInformationListCreateAPIView(ListCreateAPIView):
     serializer_class = ControlsSerializer.FalseInformationSerializer
     lookup_url_kwarg = "gossip_slug"
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticated, ]
     pagination_class = pagination.Results10SetPagination
 
     def get_queryset(self):
@@ -88,7 +88,8 @@ class RFRModelRetrieveAPIView(RetrieveUpdateDestroyAPIView):
 class FeedbackListCreateAPIView(ListCreateAPIView):
     serializer_class = ControlsSerializer.FeedbackModelSerializer
     pagination_class = pagination.Results10SetPagination
-
+    permission_classes = [IsAuthenticated, ]
+    
     def get_queryset(self):
         qs = FeedbackModel.objects.all()
         return qs

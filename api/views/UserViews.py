@@ -198,6 +198,7 @@ class UserRetrieveAndUpdatePropertyAPIView(RetrieveUpdateDestroyAPIView):
 class InterestListAPIView(ListAPIView):
     serializer_class = UserSerializers.InterestSerializer
     pagination_class = pagination.Results20SetPagination
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         qs = Interests.objects.all()
