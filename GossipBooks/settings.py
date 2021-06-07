@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ['gossipsbook.herokuapp.com', '127.0.0.1', 'localhost', 'gossips
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +50,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'answers.apps.AnswersConfig',
     'searches.apps.SearchesConfig',
+
+    'messaging.apps.MessagingConfig',
 
     # Django all-auth
     'allauth',
@@ -108,6 +112,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "GossipBooks.asgi.application"
 WSGI_APPLICATION = 'GossipBooks.wsgi.application'
 
 
