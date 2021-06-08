@@ -46,7 +46,7 @@ class FalseInformationListCreateAPIView(ListCreateAPIView):
         serializer.save(gossip=gossip)
 
 
-class FalseInformationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+class FalseInformationRetrieveAPIView(RetrieveAPIView):
     serializer_class = ControlsSerializer.FalseInformationSerializer
     lookup_url_kwarg = "false_id"
     permission_classes = [IsAuthenticated, IsAdminUser]
@@ -74,7 +74,7 @@ class RFRModelListCreateAPIView(ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class RFRModelRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+class RFRModelRetrieveAPIView(RetrieveAPIView):
     serializer_class = ControlsSerializer.RFRModelSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
     lookup_url_kwarg = "rfr_model_id"
@@ -95,7 +95,7 @@ class FeedbackListCreateAPIView(ListCreateAPIView):
         return qs
 
 
-class FeedbackRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+class FeedbackRetrieveAPIView(RetrieveAPIView):
     serializer_class = ControlsSerializer.FeedbackModelSerializer
     lookup_url_kwarg = "feedback_id"
     permission_classes = [IsAuthenticated,]
