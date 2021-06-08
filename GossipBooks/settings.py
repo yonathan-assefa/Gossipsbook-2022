@@ -226,13 +226,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'gossipsbook.in@gmail.com'
-EMAIL_HOST_PASSWORD = 'Ammananna@1991'
+# EMAIL_HOST_USER = 'gossipsbook.in@gmail.com'
+# EMAIL_HOST_PASSWORD = 'Ammananna@1991'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
@@ -241,3 +240,7 @@ EMAIL_HOST_PASSWORD = 'Ammananna@1991'
 # EMAIL_USE_TLS = True
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_API_KEY = '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'
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
