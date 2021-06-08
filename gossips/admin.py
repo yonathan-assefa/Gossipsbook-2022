@@ -1,9 +1,13 @@
 from django.contrib import admin
 
-from .models import GossipsModel, Tags, Comments
+from .models import GossipsModel, Tags, Comments, Reply
 
 admin.site.register(Tags)
 
+class ReplyAdmin(admin.ModelAdmin):
+    list_display = ("user", "comment", "content", "date_updated")
+
+admin.site.register(Reply, ReplyAdmin)
 
 @admin.register(GossipsModel)
 class PostAdmin(admin.ModelAdmin):
