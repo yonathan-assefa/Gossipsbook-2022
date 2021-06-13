@@ -4,7 +4,7 @@ from rest_framework.generics import (
 )
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from gossips.models import GossipsModel, Comments, Tags
+from gossips.models import GossipsModel, Comments, Tags, Reply
 from ..serializers import GossipSerializers
 from ..pagination import Results20SetPagination
 from .. import permissions
@@ -264,3 +264,58 @@ class CommentRetrieveAPIView(RetrieveUpdateDestroyAPIView):
 
         return super().delete(request, *args, **kwargs)
 
+
+class ReplyToCommentListCreateAPIView(ListCreateAPIView):
+    serializer_class = GossipSerializers.ReplyListSerializer
+    permission_classes = [IsAuthenticated, ]
+    lookup_url_kwarg = "comment_id"
+
+    def get_comment(self):
+        cmnt_id = self.kwargs.get(self.lookup_url_kwarg)
+        comment = get_object_or_rest_404(Comments, id=cmnt_id, msg="Comment With This Id do not Exist...")
+        return comment
+
+    def get_queryset(self):
+        comment = self.get_comment()
+        replies = comment.replies.all()
+        return replies
+
+    def perform_create(self, serializer):
+        comment = self.get_comment()
+        serializer.save(user=self.request.user, comment=comment)
+
+
+class ReplyRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = GossipSerializers.ReplyRetrieveSerializer
+    permission_classes = [IsAuthenticated, ]
+    lookup_url_kwarg = "reply_id"
+
+    def get_reply(self):
+        id_reply = self.kwargs.get(self.lookup_url_kwarg)
+        reply_obj = get_object_or_rest_404(Reply, id=id_reply, msg="Reply With this Id do not Exists...")
+        return reply_obj
+
+    def get_object(self):
+        obj = self.get_reply()
+        return obj
+
+    def update(self, *args, **kwargs):
+        reply = self.get_reply()
+        if reply.user == self.request.user:
+            return super().update(*args, **kwargs)
+
+        raise PermissionDenied("Current User Do not Permission to Update Other's Reply")
+
+    def patch(self, *args, **kwargs):
+        reply = self.get_reply()
+        if reply.user == self.request.user:
+            return super().patch(*args, **kwargs)
+
+        raise PermissionDenied("Current User Do not Permission to Update Other's Reply")
+
+    def delete(self, *args, **kwargs):
+        reply = self.get_reply()
+        if reply.user == self.request.user:
+            return super().delete(*args, **kwargs)
+
+        raise PermissionDenied("Current User Do not Permission to Update Other's Reply")

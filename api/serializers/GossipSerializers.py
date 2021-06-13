@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from gossips.models import GossipsModel, Comments, Tags
+from gossips.models import GossipsModel, Comments, Tags, Reply
 from .UserSerializers import UserSerializer, UserLeastInfoSerializer
 
 
@@ -115,3 +115,21 @@ class CommentRetrieveSerializer(ModelSerializer):
     class Meta:
         model = Comments
         fields = "__all__"
+
+
+class ReplyListSerializer(ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Reply
+        exclude = ["comment", ]
+
+
+class ReplyRetrieveSerializer(ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    comment = CommentSerializer(read_only=True)
+
+    class Meta:
+        model = Reply
+        fields = "__all__"
+
