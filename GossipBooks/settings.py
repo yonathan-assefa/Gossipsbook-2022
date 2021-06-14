@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -218,7 +222,8 @@ SOCIALACCOUNT_PROVIDERS = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = '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'
+api_key = env.get_value("api_key")
+SENDGRID_API_KEY = api_key
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
 # Internationalization
