@@ -55,6 +55,7 @@ class ChatingRoomMessage(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user1_msgs")
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user2_msgs")
     message = models.TextField()
+    chat_room = models.ForeignKey(ChatingRoom, on_delete=models.CASCADE, related_name="ch_messages")
     slug = models.SlugField()
     sent_by_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="msgs_sent_by")
     date_created = models.DateTimeField(auto_now_add=True)

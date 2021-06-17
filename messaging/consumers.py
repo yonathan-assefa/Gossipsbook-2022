@@ -5,6 +5,7 @@ from .models import Notifications, ChatingRoomMessage, ChatingRoom
 from channels.db import database_sync_to_async
 import json
 import asyncio
+from django.contrib.auth.models import User
 
 
 class ChatMessageConsumer(AsyncConsumer):
@@ -12,8 +13,8 @@ class ChatMessageConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
         print("[ CONNECTED ] ", event)
         user = self.scope["user"]
-        if user.is_authenticated:
-            print("Authenticated")
+        if not user.is_authenticated:
+            print("Un-Authenticated")
             raise Http404()
         
         await self.send({
@@ -23,6 +24,7 @@ class ChatMessageConsumer(AsyncConsumer):
         user2_username = self.scope["url_route"]["kwargs"]["username"]
         chat_room_obj = await self.get_chatroom_from_db(user.username, user2_username)
         self.chat_room = f"room_{chat_room_obj.id}"
+        print("Added")
         await self.channel_layer.group_add(
             f"room_{chat_room_obj.id}",
             self.channel_name
@@ -30,9 +32,47 @@ class ChatMessageConsumer(AsyncConsumer):
 
     async def websocket_receive(self, event):
         print("[ RECEIVED ] ", event)
+        message_dict = event["data"]
+        data = json.loads(message_dict)
+        user_sent_username = data["user_sent"]
+        message_sent = data["message"]
+
+        await self.channel_layer.group_send(
+            self.chat_room,
+            {
+                "type": "send_text_message_to_room",
+                "data": json.dumps({"msg": message_sent, "user": user_sent_username})
+            }
+        )
+
+        user1 = self.scope["user"]
+        user2 = self.scope["url_route"]["kwargs"]["username"]
+        other_user = get_object_or_404(User, username=user2)
+        sent_by_user = user1
+        if user1.username != user_sent_username:
+            sent_by_user = other_user
+            other_user = user1
+
+        await self.create_chat_message(sent_user=sent_by_user, 
+                                        to_user=other_user, message=message_sent)
 
     async def websocket_disconnect(self, event):
         print("[ DIS-CONNECTED ] ", event)
+
+    async def send_text_message_to_room(self, event):
+        event = event["data"]
+        msg = event["msg"]
+        user_sent = event["user"]
+        
+        data = json.dumps({
+            "message": msg,
+            "user": user_sent
+        })
+        
+        await self.send({
+            "type": "websocket.send",
+            "text": data
+        })
 
     @database_sync_to_async
     def get_chatroom_from_db(self, username1, username2):
@@ -40,6 +80,10 @@ class ChatMessageConsumer(AsyncConsumer):
         return obj
 
     @database_sync_to_async
-    def get_chatroom_by_id(self, id):
-        obj = get_object_or_404(ChatingRoom, id=id)
+    def create_chat_message(self, sent_user, to_user, message):
+        chat_room_id = str(self.chat_room).split("room_")[1]
+        print(chat_room_id)
+        obj = get_object_or_404(ChatingRoom, id=chat_room_id)
+        obj.ch_messages.create(user1=sent_user, user2=to_user, sent_by_user=sent_user, 
+                                                                        message=message)
         return obj
