@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import ChatingRoom, ChatingRoomMessage, Notifications
 
-# Register your models here.
+admin.site.register(ChatingRoom)
+admin.site.register(ChatingRoomMessage)
+admin.site.register(Notifications)

@@ -61,6 +61,9 @@ class ChatingRoomMessage(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["-date_created", ]
+
     def save(self, *args, **kwargs):
         slug = self.slug
 

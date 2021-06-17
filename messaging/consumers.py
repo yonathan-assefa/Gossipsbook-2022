@@ -15,7 +15,10 @@ class ChatMessageConsumer(AsyncConsumer):
         user = self.scope["user"]
         if not user.is_authenticated:
             print("Un-Authenticated")
-            raise Http404()
+            await self.send({
+                "type": "websocket.disconnect",
+            })
+            return
         
         await self.send({
             "type": "websocket.accept",
@@ -25,6 +28,9 @@ class ChatMessageConsumer(AsyncConsumer):
         chat_room_obj = await self.get_chatroom_from_db(user.username, user2_username)
         self.chat_room = f"room_{chat_room_obj.id}"
         print("Added")
+
+        print(chat_room_obj)
+
         await self.channel_layer.group_add(
             f"room_{chat_room_obj.id}",
             self.channel_name
@@ -32,10 +38,12 @@ class ChatMessageConsumer(AsyncConsumer):
 
     async def websocket_receive(self, event):
         print("[ RECEIVED ] ", event)
-        message_dict = event["data"]
+        message_dict = event["text"]
         data = json.loads(message_dict)
-        user_sent_username = data["user_sent"]
+        user_sent_username = data["user"]
         message_sent = data["message"]
+
+        print(user_sent_username, message_sent)
 
         await self.channel_layer.group_send(
             self.chat_room,
@@ -49,26 +57,28 @@ class ChatMessageConsumer(AsyncConsumer):
         user2 = self.scope["url_route"]["kwargs"]["username"]
         other_user = get_object_or_404(User, username=user2)
         sent_by_user = user1
+
         if user1.username != user_sent_username:
             sent_by_user = other_user
             other_user = user1
 
-        await self.create_chat_message(sent_user=sent_by_user, 
-                                        to_user=other_user, message=message_sent)
+        await self.create_chat_message(sent_user=sent_by_user, to_user=other_user, 
+                                                                message=message_sent)
 
     async def websocket_disconnect(self, event):
         print("[ DIS-CONNECTED ] ", event)
 
     async def send_text_message_to_room(self, event):
-        event = event["data"]
-        msg = event["msg"]
-        user_sent = event["user"]
+        # event = event["data"]
+        # msg = event["msg"]
+        # user_sent = event["user"]
         
-        data = json.dumps({
-            "message": msg,
-            "user": user_sent
-        })
+        # data = json.dumps({
+        #     "message": msg,
+        #     "user": user_sent
+        # })
         
+        data = event["data"]
         await self.send({
             "type": "websocket.send",
             "text": data
