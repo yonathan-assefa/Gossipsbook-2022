@@ -1,8 +1,8 @@
 from django.contrib import admin
-
-# Register your models here.
-
-from .models import Profile, Interests
+from .models import Profile, Interests, Page, PageInfo, PagePhoto
 
 admin.site.register(Profile)
 admin.site.register(Interests)
+admin.site.register(Page)
+admin.site.register(PageInfo)
+admin.site.register(PagePhoto)
