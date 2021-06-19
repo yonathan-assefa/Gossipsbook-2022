@@ -91,15 +91,15 @@ class Qualification(models.Model):
         return f"{self.user.username} Qualification..."
 
 
-class Page(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="pages")
+class Circle(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="circle")
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.username} |-Page"
+        return f"{self.user.username} |-Circle"
 
     def save(self, *args, **kwargs):
         slug = self.slug
@@ -109,14 +109,14 @@ class Page(models.Model):
         return super().save(*args, **kwargs)
 
 
-class PageInfo(models.Model):
+class CircleInfo(models.Model):
     CATEGORY = (
         ("CB", "CELEBRITIES"),
         ("CY", "COMPANY"),
         ("IF", "INFLUENCERS"),
         ("EP", "ENTREPRENEURS"),
     )
-    page = models.OneToOneField(Page, on_delete=models.CASCADE, related_name="info")
+    circle = models.OneToOneField(Circle, on_delete=models.CASCADE, related_name="info")
     description = models.TextField(null=True)
     category = models.CharField(max_length=2, choices=CATEGORY, null=True)
     verified = models.BooleanField(default=False)
@@ -125,14 +125,14 @@ class PageInfo(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.page.title + "| Info"
+        return self.circle.title + "| Info"
 
 
-class PagePhoto(models.Model):
-    page = models.OneToOneField(Page, on_delete=models.CASCADE, related_name="picture")
-    profile_pic = models.ImageField(upload_to="pages/profile-pic")
-    cover_pic = models.ImageField(upload_to="pages/cover-pic")
+class CirclePhoto(models.Model):
+    circle = models.OneToOneField(Circle, on_delete=models.CASCADE, related_name="picture")
+    profile_pic = models.ImageField(upload_to="circle/profile-pic")
+    cover_pic = models.ImageField(upload_to="circle/cover-pic")
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.page.title + " |Photo"
+        return self.circle.title + " |Photo"
