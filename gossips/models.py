@@ -6,8 +6,9 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from random import choice
-
+from users.models import Circle
 from answers.models import AnswersModel
+from django.http import Http404
 
 def random_number_gen(number=4):
     return "".join(str(choice(range(9))) for i in range(number))
@@ -31,19 +32,20 @@ class Tags(models.Model):
 
 
 class GossipsModel(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gossip_author', null=True, blank=True)
+    circle = models.ForeignKey(Circle, on_delete=models.CASCADE, related_name="circle_gossips", null=True, blank=True)
     title = models.CharField(max_length=75, unique=True, help_text='What is the title of your gossip?',
                              verbose_name='Title')
     content = models.TextField(max_length=3000)
     slug = models.SlugField(max_length=255, unique=True)
     date_published = models.DateTimeField(auto_now_add=True, verbose_name='Date Published')
     date_updated = models.DateTimeField(auto_now=True, verbose_name='Date Updated')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gossip_author')
     image = models.ImageField(upload_to=upload_location, blank=True, null=True, help_text='Add image (optional)')
     tags = models.ManyToManyField(Tags, name='q_tags', blank=True)
     shares = models.IntegerField(default=0)
     true = models.ManyToManyField(User, related_name='true', blank=True)
     false = models.ManyToManyField(User, related_name='false', blank=True)
-    link = models.CharField(max_length=2040, blank=True, null=True)  # 2040 is the maximum lenght for a link...
+    link = models.CharField(max_length=2040, blank=True, null=True)  # 2040 is the maximum length for a link...
     from_question_user = models.CharField(max_length=255, blank=True, null=True)
     from_question_answer_provider = models.CharField(max_length=255, blank=True, null=True)
 
@@ -93,6 +95,12 @@ class GossipsModel(models.Model):
     
     # reduce the size of the image if it's more than 1200px
     def save(self, *args, **kwargs):
+        author = self.author
+        circle = self.circle
+
+        if (not author) and (not circle):
+            raise Http404
+
         super().save( *args, **kwargs)
     
         if self.image:

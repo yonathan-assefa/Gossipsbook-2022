@@ -1,8 +1,9 @@
 from django.core import exceptions
-from ..serializers import CircleSerializers
+from ..serializers import CircleSerializers, GossipSerializers
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from users.models import Circle, CircleInfo, CirclePhoto
+from gossips.models import GossipsModel
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from django.core.exceptions import ObjectDoesNotExist
