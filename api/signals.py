@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save
 from django.core.mail import send_mail
 from django_rest_passwordreset.signals import reset_password_token_created
+from users.models import Circle, CircleInfo, CirclePhoto
 
 
 # @receiver(reset_password_token_created)
@@ -21,3 +22,16 @@ from django_rest_passwordreset.signals import reset_password_token_created
 #         # to
 #         [reset_password_token.user.email, ]
 #     )
+
+@receiver(signal=post_save, sender=Circle)
+def create_circle_info(sender, instance, created, **kwargs):
+    if created:
+        obj = CircleInfo.objects.create(circle=instance)
+        return obj
+
+
+@receiver(signal=post_save, sender=Circle)
+def create_circle_photo(sender, instance, created, **kwargs):
+    if created:
+        obj = CirclePhoto.objects.create(circle=instance)
+        return obj

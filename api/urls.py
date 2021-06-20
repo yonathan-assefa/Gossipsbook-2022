@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.urls import path, include
 from django.conf.urls import url
-from .views import GossipViews, ControlsViews, UserViews
+from .views import GossipViews, ControlsViews, UserViews, CircleViews
 
 urlpatterns = [
     path("authentication/", include("rest_framework.urls")),
@@ -32,7 +32,11 @@ urlpatterns = [
     path("current-user/Interests/list-create/", UserViews.CurrentUserProfileAddInterestAPIView.as_view(), ),
     path("current-user/profile/experiences/", UserViews.UserProfileWorkExperienceListCreateAPIView.as_view(), ),
     path("current-user/profile/qualifications/", UserViews.UserProfileQualificationListCreateAPIView.as_view(), ),
-    
+    path("current-user/circle/update/", CircleViews.CurrentUserCircleRetrieveAPIView.as_view(), ),
+
     path("interest/list/", UserViews.InterestListAPIView.as_view(), ),
+
+    path("circle/list-create/", CircleViews.CircleListCreateAPIView.as_view(), ),
+    path("circle/retrieve/<circle_slug>/", CircleViews.CircleRetrieveAPIView.as_view(), ),
 
 ]
