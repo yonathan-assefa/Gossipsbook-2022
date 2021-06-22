@@ -8,7 +8,23 @@ class IsGossipOfCurrentUserOrReadOnly(BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.author
+        if request.method in SAFE_METHODS:
+            return True
+
+        user = request.user
+        try:
+            circle = user.circle
+            if obj.circle == circle:
+                return True
+
+        except ObjectDoesNotExist:
+            pass
+        
+        return obj.author == user
+
+
+
+
 
 
 class IsCommentOfCurrentUser(BasePermission):

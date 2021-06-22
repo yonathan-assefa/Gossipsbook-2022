@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from gossips.models import GossipsModel, Comments, Tags, Reply
 from .UserSerializers import UserSerializer, UserLeastInfoSerializer
+from .CircleSerializers import CircleForGossipSerializer
 
 
 def percentage_true(serializer):
@@ -26,6 +27,7 @@ def percentage_false(serializer):
 
     return data
 
+
 class TagSerializer(ModelSerializer):
 
     class Meta:
@@ -47,6 +49,7 @@ class GossipListCreateSerializer(ModelSerializer):
     Serializer For ListView and CreateView of the API...
     """
     author = UserSerializer(read_only=True)
+    circle = CircleForGossipSerializer(read_only=True)
     image = serializers.ImageField(read_only=True)
     slug = serializers.SlugField(read_only=True)
     shares = serializers.IntegerField(read_only=True)
@@ -55,7 +58,7 @@ class GossipListCreateSerializer(ModelSerializer):
 
     class Meta:
         model = GossipsModel
-        exclude = ["q_tags", "true", "false"]
+        exclude = ["q_tags", "true", "false",]
 
     def get_percentage_true(self, serializer):
         return percentage_true(serializer)
@@ -66,6 +69,7 @@ class GossipListCreateSerializer(ModelSerializer):
 
 class GossipRetrieveSerializer(ModelSerializer):
     author = UserSerializer(read_only=True)
+    circle = serializers.StringRelatedField(read_only=True)
     image = serializers.ImageField(read_only=True)
     slug = serializers.SlugField(read_only=True)
     shares = serializers.IntegerField(read_only=True)
@@ -76,7 +80,7 @@ class GossipRetrieveSerializer(ModelSerializer):
 
     class Meta:
         model = GossipsModel
-        exclude = ["q_tags", "true", "false"]
+        exclude = ["q_tags", "true", "false", ]
 
     def get_percentage_true(self, serializer):
         return percentage_true(serializer)
@@ -94,6 +98,7 @@ class GossipRetrieveSerializer(ModelSerializer):
         ser = UserLeastInfoSerializer(qs, many=True)
         return ser.data
         
+
 class GossipUpdateProviderSerializer(ModelSerializer):
 
     class Meta:

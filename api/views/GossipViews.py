@@ -98,13 +98,7 @@ class GossipUpdateAPIView(RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         serializer.save()
-
-    def update(self, request, *args, **kwargs):
-        gossip = self.get_gossip()  
-        if not gossip.author == self.request.user:
-            raise PermissionDenied("User is not legal to provide an Update...")
-        return super().update(request, *args, **kwargs)
-
+        
 
 class GossipsVoteAPIView(ListCreateAPIView):
     serializer_class = GossipSerializers.UserLeastInfoSerializer

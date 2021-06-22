@@ -63,3 +63,23 @@ class CircleRetrieveAPIView(RetrieveUpdateAPIView):
         slug = self.kwargs.get(self.lookup_url_kwarg)
         obj = get_object_or_rest_404(Circle, slug=slug, msg="Circle With this slug do not exists...")
         return obj
+
+
+class GossipsForCircleListCreateAPIView(ListCreateAPIView):
+    serializer_class = CircleSerializers.CircleGossipsSerializer
+    permission_classes = [IsAuthenticated, permissions.TrueIfUserHaveACircle]
+
+    def get_queryset(self):
+        circle = self.get_circle()
+        qs = circle.circle_gossips.all().order_by("-date_updated")
+        return qs
+
+    def get_circle(self):
+        user = self.request.user
+        circle = user.circle
+        return circle
+
+    def perform_create(self, serializer):
+        circle = self.get_circle()
+        serializer.save(circle=circle)
+
