@@ -2,7 +2,7 @@ from django.core import exceptions
 from ..serializers import CircleSerializers, GossipSerializers
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
-from users.models import Circle, CircleInfo, CirclePhoto
+from users.models import Circle, CircleInfo, CirclePhoto, Status
 from gossips.models import GossipsModel
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
@@ -83,3 +83,67 @@ class GossipsForCircleListCreateAPIView(ListCreateAPIView):
         circle = self.get_circle()
         serializer.save(circle=circle)
 
+
+class StatusListCreateAPIView(ListCreateAPIView):
+    serializer_class = CircleSerializers.StatusListCreateSerializer
+    permission_classes = [IsAuthenticated, permissions.IsGossipOfCurrentUserOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Status.objects.none()
+        created_by = self.request.query_params.get("created_by")
+        if created_by:
+            created_by = str(created_by).lower()
+            if created_by == "circle":
+                circle = user.circle
+                qs |= circle.circle_status.all()
+            elif created_by == "user":
+                qs |= user.user_status.all()
+            else:
+                raise ValidationError("Invalid Argument to the Parameter `Created by` Provided...")
+
+        return qs
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        created_by = self.request.query_params.get("created_by")
+        if created_by:
+            created_by = str(created_by).lower()
+            if created_by == "circle":
+                circle = user.circle
+                serializer.save(circle=circle)
+                return
+
+            elif created_by == "user":
+                serializer.save(user=self.request.user)
+                return
+
+            raise ValidationError("Invalid Argument to the Parameter `Created by` Provided...")
+        
+        serializer.save(user=self.request.user)
+
+
+class StatusUpdateAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CircleSerializers.StatusListCreateSerializer
+    permission_classes = [IsAuthenticated, ]
+    lookup_url_kwarg = "status_slug"
+
+    def get_object(self):
+        self.modify_serializer()
+        return self.get_status()
+
+    def get_status(self):
+        slug = self.kwargs.get(self.lookup_url_kwarg)
+        msg = "Status with this Slug do not Exist..."
+        obj = get_object_or_rest_404(Status, slug=slug, msg=msg)
+        return obj
+
+    def modify_serializer(self):
+        prop = self.request.query_params.get("props")
+        if (prop is not None) and (prop == ""):
+            prop = str(prop).lower()
+            if prop == "image":
+                self.serializer_class = CircleSerializers.StatusImageSerializer
+                return
+
+            raise ValidationError("Invalid Argument For `props` provided...")

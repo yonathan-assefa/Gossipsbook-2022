@@ -136,3 +136,23 @@ class CirclePhoto(models.Model):
 
     def __str__(self):
         return self.circle.title + " |Photo"
+
+
+class Status(models.Model):
+    circle = models.ForeignKey(Circle, on_delete=models.SET_NULL, blank=True, null=True, related_name="circle_status")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name="user_status")
+    text = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to="status/pictures", blank=True, null=True)
+    slug = models.SlugField()
+    expired = models.BooleanField(default=False)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "Status..."
+
+    def save(self, *args, **kwargs):
+        slug = self.slug
+        if (slug is None) or (slug == "") or (slug == "slug"):
+            self.slug = slugify("Status| " + create_random_slug(number=12))
+
+        return super().save(*args, **kwargs)

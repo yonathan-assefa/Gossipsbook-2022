@@ -1,4 +1,4 @@
-from users.models import Circle, CircleInfo, CirclePhoto
+from users.models import Circle, CircleInfo, CirclePhoto, Status
 from gossips.models import GossipsModel
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
@@ -56,3 +56,21 @@ class CircleGossipsSerializer(ModelSerializer):
     class Meta:
         model = GossipsModel
         exclude = ["author", "q_tags", "true", "false", "image", ]
+
+
+class StatusListCreateSerializer(ModelSerializer):
+    circle = serializers.StringRelatedField(read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
+    slug = serializers.SlugField(read_only=True)
+    expired = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = Status
+        fields = "__all__"
+
+
+class StatusImageSerializer(ModelSerializer):
+
+    class Meta:
+        model = Status
+        fields = ["image", ]
