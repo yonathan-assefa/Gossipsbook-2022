@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.exceptions import PermissionDenied
 
+
 class IsGossipOfCurrentUserOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
@@ -23,8 +24,25 @@ class IsGossipOfCurrentUserOrReadOnly(BasePermission):
         return obj.author == user
 
 
+class IsStatusOfCurrentUserOrReadOnly(BasePermission):
 
+    def has_permission(self, request, view):
+        return True
 
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+
+        user = request.user
+        try:
+            circle = user.circle
+            if obj.circle == circle:
+                return True
+
+        except ObjectDoesNotExist:
+            pass
+        
+        return obj.user == user
 
 
 class IsCommentOfCurrentUser(BasePermission):

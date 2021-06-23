@@ -125,7 +125,7 @@ class StatusListCreateAPIView(ListCreateAPIView):
 
 class StatusUpdateAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CircleSerializers.StatusListCreateSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, permissions.IsStatusOfCurrentUserOrReadOnly]
     lookup_url_kwarg = "status_slug"
 
     def get_object(self):

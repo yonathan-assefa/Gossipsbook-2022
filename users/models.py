@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.fields import related
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -7,6 +8,7 @@ from django.utils.text import slugify
 from PIL import Image
 from string import ascii_letters
 from random import choice
+from django.http import Http404
 
 
 def upload_location(instance, filename, *args, **kwargs):
@@ -95,6 +97,7 @@ class Circle(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="circle")
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
+    followers = models.ManyToManyField(User, through="CircleFollower", related_name="user_followers")
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
@@ -136,6 +139,27 @@ class CirclePhoto(models.Model):
 
     def __str__(self):
         return self.circle.title + " |Photo"
+
+
+class CircleFollower(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    circle = models.ForeignKey(Circle, on_delete=models.CASCADE, related_name="follower_set")
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} Following {self.circle.title}"
+
+    class Meta:
+        unique_together = ["user", "circle"]
+
+    def save(self, *args, **kwargs):
+        circle_user = self.circle.user
+        user = self.user
+        if user == circle_user:
+            raise Http404()
+            
+        return super().save(*args, **kwargs)
 
 
 class Status(models.Model):
