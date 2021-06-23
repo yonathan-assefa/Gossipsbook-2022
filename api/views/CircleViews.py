@@ -1,6 +1,8 @@
 from django.core import exceptions
+from rest_framework.response import Response
+from rest_framework import status
 from ..serializers import CircleSerializers, GossipSerializers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, User
 from rest_framework.permissions import IsAuthenticated
 from users.models import Circle, CircleInfo, CirclePhoto, Status
 from gossips.models import GossipsModel
@@ -63,6 +65,41 @@ class CircleRetrieveAPIView(RetrieveUpdateAPIView):
         slug = self.kwargs.get(self.lookup_url_kwarg)
         obj = get_object_or_rest_404(Circle, slug=slug, msg="Circle With this slug do not exists...")
         return obj
+
+    def update(self, *args, **kwargs):
+        obj = self.get_object()
+        curr_user = self.request.user
+        if curr_user == obj.user:
+            raise PermissionDenied("Invalid Request Provided...")
+        
+        prop = self.request.query_params.get("prop")
+        data = {}
+        if prop:
+            prop = str(prop).lower()
+            if prop == "follow":
+                obj.followers.add(curr_user)
+                data["detail"] = "Following " + str(obj.title)
+            
+            elif prop == "unfollow":
+                obj.followers.remove(curr_user)
+                data["detail"] = "Un-Following " + str(obj.title)
+
+            elif prop == "check":
+                qs = obj.followers.filter(username=curr_user.username)
+                if qs.exists():
+                    data["following"] = True
+                    return Response(data, status=status.HTTP_200_OK)
+                data["following"] = False
+                return Response(data, status=status.HTTP_200_OK)
+            
+            else:
+                raise ValidationError("Invalid Parameter for `prop` provided...")
+
+            obj.save()
+        
+            return Response(data, status=status.HTTP_201_CREATED)
+
+        raise PermissionDenied("no parameter `prop` provided...")
 
 
 class GossipsForCircleListCreateAPIView(ListCreateAPIView):

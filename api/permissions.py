@@ -2,6 +2,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.exceptions import PermissionDenied
 
+SAFE_METHODS_WITH_PUT = ("GET", "OPTIONS", "HEAD", "PUT")
+SAFE_METHODS_WITH_POST = ("GET", "OPTIONS", "HEAD", "POST")
+
 
 class IsGossipOfCurrentUserOrReadOnly(BasePermission):
 
@@ -101,7 +104,7 @@ class DoCircleBelongToCurrentUser(BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
+        if request.method in SAFE_METHODS_WITH_PUT:
             return True
 
         return request.user == obj.user
