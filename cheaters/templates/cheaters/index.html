@@ -13,7 +13,7 @@
                 </div>
           
                 <div class="col-8">
-                   <strong><a href="{% url 'users:user_view_profile' cheater.author.username %}" class="text-dark">{{cheater.author.username}}</a>  </strong>
+                   <strong><a href="{% url 'users:user_view_profile' user.username %}" class="text-dark">{{cheater.author.username}}</a>  </strong>
                    <small class="text-muted ml-1">{{cheater.date_published|naturaltime}}</small>
                    {% if cheater.author.profile.designation %}
                    <div class="text-muted mt-2 mr-3">

@@ -15,7 +15,7 @@
                 </div>
           
                 <div class="col-8">
-                   <strong><a href="{% url 'users:user_view_profile' gossip.author.username %}" class="text-dark">{{gossip.author.username}}</a> 
+                   <strong><a href="{% url 'users:user_view_profile' user.username %}" class="text-dark">{{gossip.author.username}}</a> 
                    </strong>
 
                    <small class="text-muted ml-1">{{gossip.date_published|naturaltime}}</small>
