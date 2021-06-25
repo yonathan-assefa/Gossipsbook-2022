@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.urls import path, include
 from django.conf.urls import url
 from .views import GossipViews, ControlsViews, UserViews, CircleViews
-from messaging.views import RoomMessagesListAPIView, RoomListAPIView
+from messaging.views import RoomMessagesListAPIView, RoomListAPIView, NotificationsListAPIView
 
 urlpatterns = [
     path("authentication/", include("rest_framework.urls")),
@@ -45,5 +45,6 @@ urlpatterns = [
     path("status/update/<status_slug>", CircleViews.StatusUpdateAPIView.as_view(), ),
 
     path("room/<username>/", RoomMessagesListAPIView.as_view(), ),
-    path("room/", RoomListAPIView.as_view(), )
+    path("room/", RoomListAPIView.as_view(), ),
+    path("notifications/", NotificationsListAPIView.as_view(), )
 ]

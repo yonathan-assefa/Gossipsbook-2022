@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import ChatingRoom, ChatingRoomMessage
+from .models import ChatingRoom, ChatingRoomMessage, Notifications
 
 
 class ChatingRoomMessageListSerializer(ModelSerializer):
@@ -20,3 +20,12 @@ class ChatingRoomMessageListSerializer(ModelSerializer):
             return user_2.username
 
         return user_1.username
+
+
+class NotificationSerializer(ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Notifications
+        fields = "__all__"
+

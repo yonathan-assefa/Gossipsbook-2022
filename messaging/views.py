@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .models import ChatingRoom
 from api.views.GossipViews import get_object_or_rest_404
 from api.serializers.UserSerializers import UserWithProfileSerializer
-from .serializers import ChatingRoomMessageListSerializer
+from .serializers import ChatingRoomMessageListSerializer, NotificationSerializer
 
 
 @login_required
@@ -75,4 +75,14 @@ class RoomListAPIView(ListAPIView):
         for i in user_values:
             qs |= User.objects.filter(id=i)
 
+        return qs
+
+
+class NotificationsListAPIView(ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = user.user_nots.all()
         return qs
