@@ -33,6 +33,24 @@ class ChatingRoomObject(models.Manager):
         obj = self.create(user1=user1, user2=user2)
         return obj
 
+    def filter_room(self, username1, username2):
+        for i in [username1, username2]:
+            if type(i) != type("str"):
+                raise Http404()
+
+        user1 = get_object_or_404(User, username=username1)
+        user2 = get_object_or_404(User, username=username2)
+
+        qs1 = self.filter(user1=user1, user2=user2)
+        if qs1.exists():
+            return qs1.get()
+
+        qs2 = self.filter(user2=user1, user1=user2)
+        if qs2.exists():
+            return qs2.get()
+
+        return None
+
 
 class ChatingRoom(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user1_chating_room")
@@ -49,6 +67,14 @@ class ChatingRoom(models.Model):
     def __str__(self):
         return f"{self.user1} and {self.user2} Chating-Room..."
 
+    def get_chatted_with_user(self, user):
+        if user == self.user1:
+            return self.user2
+        
+        elif user == self.user2:
+            return self.user1
+
+        return None
 
 
 class ChatingRoomMessage(models.Model):

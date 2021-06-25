@@ -95,6 +95,7 @@ class UserProfileRetrieveAllSerializer(ModelSerializer):
         serialized = UserLeastInfoSerializer(qs, many=True)
         return serialized.data
 
+
 class UserInterestSerializer(ModelSerializer):
     title = serializers.ReadOnlyField()
     description = serializers.ReadOnlyField()
@@ -181,3 +182,12 @@ class UserEmailPasswordResetSerializer(serializers.Serializer):
             return value
 
         raise serializers.ValidationError("No User is registered with this User...")
+
+
+class UserWithProfileSerializer(ModelSerializer):
+    profile = UserProfileImageSerializer(read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ["username", "email", "first_name", "last_name", "profile"]
+
