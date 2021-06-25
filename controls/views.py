@@ -1,3 +1,4 @@
+from django.http.response import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -35,6 +36,8 @@ def welcome(request):
 
 @login_required()
 def rfr(request):
+    if request.user.is_authenticated:
+        raise Http404
     if request.method == 'POST':
         section = request.POST.get('section', False)
         post_id = request.POST.get('post_id', False)
@@ -63,6 +66,8 @@ def rfr(request):
 
 
 def feedback(request):
+    if request.user.is_authenticated:
+        raise Http404
     feedback_message = request.GET.get('feedback_message', False)
     if feedback_message:
         if request.user.is_authenticated:
