@@ -5,7 +5,7 @@ from .UserSerializers import UserSerializer, UserProfileDisplaySerializer
 from .GossipSerializers import GossipListCreateSerializer
 
 
-class FalseInformationSerializer(ModelSerializer):
+class FalseInformationListSerializer(ModelSerializer):
     gossip = GossipListCreateSerializer(read_only=True)
 
     class Meta:
@@ -15,7 +15,8 @@ class FalseInformationSerializer(ModelSerializer):
 
 class RFRModelSerializer(ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
-
+    gossip = serializers.StringRelatedField(read_only=True)
+    
     class Meta:
         model = RFRModel
         fields = "__all__"
