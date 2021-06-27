@@ -23,6 +23,7 @@ class RFRModelSerializer(ModelSerializer):
 
 
 class FeedbackModelSerializer(ModelSerializer):
+    slug = serializers.SlugField(read_only=True)
 
     class Meta:
         model = FeedbackModel

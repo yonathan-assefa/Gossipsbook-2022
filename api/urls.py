@@ -1,3 +1,4 @@
+from users.models import Circle
 from django.contrib.auth.models import User
 from django.urls import path, include
 from django.conf.urls import url
@@ -41,10 +42,11 @@ urlpatterns = [
 
     path("circle/list-create/", CircleViews.CircleListCreateAPIView.as_view(), ),
     path("circle/retrieve/<circle_slug>/", CircleViews.CircleRetrieveAPIView.as_view(), ),
-    path("current-user/circle/gossips/create/", CircleViews.GossipsForCircleListCreateAPIView.as_view(), ),
+    path("circle/<circle_slug>/gossips/list/", CircleViews.GossipsForCircleListAPIView.as_view(), ),
+    path("current-user/circle/gossips/list-create/", CircleViews.GossipsForCircleListCreateAPIView.as_view(), ),
 
     path("status/list-create/", CircleViews.StatusListCreateAPIView.as_view()),
-    path("status/update/<status_slug>", CircleViews.StatusUpdateAPIView.as_view(), ),
+    path("status/update/<status_slug>/", CircleViews.StatusUpdateAPIView.as_view(), ),
 
     path("room/<username>/", RoomMessagesListAPIView.as_view(), ),
     path("room/", RoomListAPIView.as_view(), ),

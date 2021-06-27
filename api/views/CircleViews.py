@@ -5,7 +5,7 @@ from django.contrib.auth.models import Permission, User
 from rest_framework.permissions import IsAuthenticated
 from users.models import Circle, CircleInfo, CirclePhoto, Status
 from gossips.models import GossipsModel
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from .ControlsViews import get_object_or_rest_404
@@ -120,9 +120,25 @@ class GossipsForCircleListCreateAPIView(ListCreateAPIView):
         serializer.save(circle=circle)
 
 
+class GossipsForCircleListAPIView(ListAPIView):
+    serializer_class = GossipSerializers.GossipListCreateSerializer
+    permission_classes = [IsAuthenticated, ]    
+    lookup_url_kwarg = "circle_slug"
+
+    def get_circle(self):
+        slug = self.kwargs.get(self.lookup_url_kwarg)
+        obj = get_object_or_rest_404(Circle, slug=slug, msg="Circle With This slug donot exist...")
+        return obj
+
+    def get_queryset(self):
+        circle = self.get_circle()
+        qs = circle.circle_gossips.all().order_by("-date_updated")
+        return qs
+    
+
 class StatusListCreateAPIView(ListCreateAPIView):
     serializer_class = CircleSerializers.StatusListCreateSerializer
-    permission_classes = [IsAuthenticated, permissions.IsGossipOfCurrentUserOrReadOnly]
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         user = self.request.user
@@ -131,7 +147,10 @@ class StatusListCreateAPIView(ListCreateAPIView):
         if created_by:
             created_by = str(created_by).lower()
             if created_by == "circle":
-                circle = user.circle
+                try:
+                    circle = user.circle
+                except ObjectDoesNotExist:
+                    raise NotFound("User Do not have a Circle...")
                 qs |= circle.circle_status.all()
             elif created_by == "user":
                 qs |= user.user_status.all()
@@ -146,7 +165,11 @@ class StatusListCreateAPIView(ListCreateAPIView):
         if created_by:
             created_by = str(created_by).lower()
             if created_by == "circle":
-                circle = user.circle
+                try:
+                    circle = user.circle
+                except ObjectDoesNotExist:
+                    raise NotFound("User Do not have a Circle...")
+
                 serializer.save(circle=circle)
                 return
 

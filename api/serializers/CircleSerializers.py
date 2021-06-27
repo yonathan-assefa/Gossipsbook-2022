@@ -1,5 +1,6 @@
 from users.models import Circle, CircleInfo, CirclePhoto, Status
 from gossips.models import GossipsModel
+from ..serializers.UserSerializers import OnlyUserSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
@@ -7,10 +8,16 @@ from rest_framework.serializers import ModelSerializer
 class CircleSerializer(ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     slug = serializers.SlugField(read_only=True)
+    followers = serializers.SerializerMethodField()
 
     class Meta:
         model = Circle
         fields = "__all__"
+
+    def get_followers(self, serializer):
+        followers_qs = serializer.followers.all()[:3]
+        ser = OnlyUserSerializer(followers_qs, many=True)
+        return ser.data
 
 
 class CircleInfoSerializer(ModelSerializer):
@@ -49,7 +56,7 @@ class CurrentUserCircleSerializer(ModelSerializer):
 
 
 class CircleGossipsSerializer(ModelSerializer):
-    circle = serializers.StringRelatedField(read_only=True)
+    circle = CurrentUserCircleSerializer(read_only=True)
     slug = serializers.SlugField(read_only=True)
     shares = serializers.ReadOnlyField()
 
