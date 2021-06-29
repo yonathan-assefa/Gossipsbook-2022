@@ -1,10 +1,23 @@
 from .models import Notifications
-from gossips.models import GossipsModel, Comments, Reply
-from django.db.models.signals import post_save
+from gossips.models import GossipsModel, Comments, Reply, User
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+
+@receiver(signal=m2m_changed, sender=GossipsModel.true.through)
+def create_notification_for_true(sender, instance, action, **kwargs):
+    # print(sender.objects.last().user, instance, action)
+    # print(pk_set)
+    # print(kwargs.values())
+    # print(**kwargs["pk_set"])
+    if action == "pre_add":
+        user = instance.author
+        # chat_user = User.objects.get(username="chat_user")
+        message = f"{sender.objects.last().user} is Following You..."
+        obj = Notifications.objects.create(user=user, message=message)
+        return obj
 
 
 @receiver(signal=post_save, sender=Reply)

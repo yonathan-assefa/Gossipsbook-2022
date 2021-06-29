@@ -10,6 +10,7 @@ from users.models import Circle
 from answers.models import AnswersModel
 from django.http import Http404
 
+
 def random_number_gen(number=4):
     return "".join(str(choice(range(9))) for i in range(number))
 
@@ -29,6 +30,7 @@ class Tags(models.Model):
 
     class Meta:
         verbose_name_plural = 'Tags'
+
 
 class GossipsModel(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gossip_author', null=True, blank=True)
@@ -111,7 +113,7 @@ class GossipsModel(models.Model):
 
     class Meta:
         verbose_name_plural = 'Gossips'
-
+        
 
 class Comments(models.Model):
     gossip = models.ForeignKey(GossipsModel, on_delete=models.CASCADE)
