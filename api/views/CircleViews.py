@@ -23,6 +23,20 @@ class CircleListCreateAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         qs = Circle.objects.all()
+        order_by = self.request.query_params.get("order_by", None)
+        if order_by is not None:
+            order_by = str(order_by).lower()
+            if order_by == "most_followed":
+                qs = sorted(qs, key=lambda x: x.followers.count(), reverse=True)
+                return qs
+                
+            if order_by == "least_followed":
+                qs = sorted(qs, key=lambda x: x.followers.count(), reverse=True)
+                return qs
+            
+            msg = "Invalid Arguments for `order_by` only [`most_followed`, `least_followed`] are allowed..."
+            raise ValidationError(msg)
+
         return qs
 
     def perform_create(self, serializer):
@@ -152,11 +166,14 @@ class StatusListCreateAPIView(ListCreateAPIView):
                 except ObjectDoesNotExist:
                     raise NotFound("User Do not have a Circle...")
                 qs |= circle.circle_status.all()
+                return qs
+
             elif created_by == "user":
                 qs |= user.user_status.all()
             else:
                 raise ValidationError("Invalid Argument to the Parameter `Created by` Provided...")
-
+        if not qs.exists():
+            qs = user.user_status.all()
         return qs
 
     def perform_create(self, serializer):

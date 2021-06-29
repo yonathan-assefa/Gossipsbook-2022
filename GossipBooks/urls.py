@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import get_token
 # from messaging.views import conntect_websocket
+from messaging.views import connect_notification_websocket
 
 urlpatterns = [
     path('gossips/', include('gossips.urls', namespace='gossips')),
@@ -19,6 +20,7 @@ urlpatterns = [
     path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path('', include('controls.urls', namespace='controls')),
     # path("room/<username>/", conntect_websocket, name="Websocket_name"),
+    path("notifications/room/", connect_notification_websocket),
 ]
 
 if settings.DEBUG:

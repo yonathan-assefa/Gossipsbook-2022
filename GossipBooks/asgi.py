@@ -5,7 +5,7 @@ from django.urls import path
 import os
 from channels.routing import get_default_application
 import django
-from messaging.consumers import ChatMessageConsumer
+from messaging.consumers import ChatMessageConsumer, NotificationConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GossipBooks.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -18,6 +18,7 @@ application = ProtocolTypeRouter({
             URLRouter(
                 [
                    path("room/<username>/", ChatMessageConsumer.as_asgi(), name="Chat-Consumer-URL"),
+                   path("notifications/", NotificationConsumer.as_asgi(), name="Notification-Consumer-URL"),
                 ]
             )
         )

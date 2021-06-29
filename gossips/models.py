@@ -31,6 +31,26 @@ class Tags(models.Model):
         verbose_name_plural = 'Tags'
 
 
+class VotedTrueToGossipModel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_voted_true")
+    gossips_model = models.ForeignKey("GossipsModel", on_delete=models.SET_NULL, null=True, blank=True, related_name="voted_true")
+    date_published = models.DateTimeField(auto_now_add=True, verbose_name='Date Published')
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='Date Updated')
+
+    def __str__(self):
+        return f"{self.user.username} voted `True` {self.gossip.title}"
+
+
+class VotedFalseToGossipModel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_voted_false")
+    gossips_model = models.ForeignKey("GossipsModel", on_delete=models.SET_NULL, blank=True, null=True, related_name="voted_false")
+    date_published = models.DateTimeField(auto_now_add=True, verbose_name='Date Published')
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='Date Updated')
+
+    def __str__(self):
+        return f"{self.user.username} voted `False` {self.gossip.title}"
+
+
 class GossipsModel(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gossip_author', null=True, blank=True)
     circle = models.ForeignKey(Circle, on_delete=models.CASCADE, related_name="circle_gossips", null=True, blank=True)

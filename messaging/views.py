@@ -5,10 +5,11 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import ChatingRoom
+from .models import ChatingRoom, Notifications
 from api.views.GossipViews import get_object_or_rest_404
 from api.serializers.UserSerializers import UserWithProfileSerializer
 from .serializers import ChatingRoomMessageListSerializer, NotificationSerializer
+import websocket
 
 
 @login_required
@@ -19,6 +20,24 @@ def conntect_websocket(request, username):
         "user_chating_with": user_obj,
     }
     return render(request, "chating.html", context)
+
+
+def connect_notification_websocket(request):
+    url = request.get_raw_uri()
+    host = request.get_host()
+
+    if request.method == "POST":
+        user = User.objects.get(username="chat_user")
+        msg = "Hello Message for chat_user..."
+        obj = Notifications.objects.create(user=user, message=msg)
+        print("Created ", obj)
+
+    context = {
+
+    }
+
+    return render(request, "notifications.html", context)
+
 
 
 class RoomMessagesListAPIView(ListAPIView):

@@ -97,3 +97,56 @@ class ChatMessageConsumer(AsyncConsumer):
         obj.ch_messages.create(user1=sent_user, user2=to_user, sent_by_user=sent_user, 
                                                                         message=message)
         return obj
+
+
+
+class NotificationConsumer(AsyncConsumer):
+
+    async def websocket_connect(self, event):
+        print("CONNTECTED -> ", event)
+        user = self.scope["user"]
+        if not user.is_authenticated:
+            await self.send({
+                "type": "websocket.disconnect"
+            })
+            return 
+
+        await self.send({
+            "type": "websocket.accept"
+        })
+
+        username = user.username
+        
+        chat_room = f"notification_room_{username}"
+        self.chat_room = chat_room
+        print(chat_room)
+        await self.channel_layer.group_add(
+            chat_room,
+            self.channel_name
+        )
+
+    async def websocket_receive(self, event):
+        print("RECEIVED -> ", event)
+        data = event["text"]
+
+        await self.channel_layer.group_send(
+            self.chat_room,
+            {
+                "type": "send_notification",
+                "data": data
+            }
+        )
+
+    async def send_notification(self, event):
+        data = event["data"]
+        print(data)
+        await self.send({
+            "type": "websocket.send",
+            "text": data,
+        })
+
+    async def websocket_disconnect(self, event):
+        print("DIS-CONNTECTED -> ", event)
+
+
+

@@ -28,6 +28,8 @@ class GossipsListCreateAPIView(ListCreateAPIView):
     def get_queryset(self):
         qs = GossipsModel.objects.all()
         qs = self.filter_qs_by_parameter(qs)
+        print(" [REQUEST] ", self.request.get_host())
+        print(self.request.get_raw_uri(), self.request.get_raw_uri())
         return qs
 
     def filter_qs_by_parameter(self, qs):
