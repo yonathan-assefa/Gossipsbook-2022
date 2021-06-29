@@ -30,27 +30,6 @@ class Tags(models.Model):
     class Meta:
         verbose_name_plural = 'Tags'
 
-
-class VotedTrueToGossipModel(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_voted_true")
-    gossips_model = models.ForeignKey("GossipsModel", on_delete=models.SET_NULL, null=True, blank=True, related_name="voted_true")
-    date_published = models.DateTimeField(auto_now_add=True, verbose_name='Date Published')
-    date_updated = models.DateTimeField(auto_now=True, verbose_name='Date Updated')
-
-    def __str__(self):
-        return f"{self.user.username} voted `True` {self.gossip.title}"
-
-
-class VotedFalseToGossipModel(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_voted_false")
-    gossips_model = models.ForeignKey("GossipsModel", on_delete=models.SET_NULL, blank=True, null=True, related_name="voted_false")
-    date_published = models.DateTimeField(auto_now_add=True, verbose_name='Date Published')
-    date_updated = models.DateTimeField(auto_now=True, verbose_name='Date Updated')
-
-    def __str__(self):
-        return f"{self.user.username} voted `False` {self.gossip.title}"
-
-
 class GossipsModel(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gossip_author', null=True, blank=True)
     circle = models.ForeignKey(Circle, on_delete=models.CASCADE, related_name="circle_gossips", null=True, blank=True)
@@ -63,8 +42,8 @@ class GossipsModel(models.Model):
     image = models.ImageField(upload_to=upload_location, blank=True, null=True, help_text='Add image (optional)')
     tags = models.ManyToManyField(Tags, name='q_tags', blank=True)
     shares = models.IntegerField(default=0)
-    true = models.ManyToManyField(User, related_name='true', blank=True)
-    false = models.ManyToManyField(User, related_name='false', blank=True)
+    true = models.ManyToManyField(User, blank=True, related_name="true")
+    false = models.ManyToManyField(User, blank=True, related_name="false")
     link = models.CharField(max_length=2040, blank=True, null=True)  # 2040 is the maximum length for a link...
     from_question_user = models.CharField(max_length=255, blank=True, null=True)
     from_question_answer_provider = models.CharField(max_length=255, blank=True, null=True)
