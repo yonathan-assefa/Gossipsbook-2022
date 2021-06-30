@@ -4,6 +4,7 @@ from channels.security.websocket import AllowedHostsOriginValidator, OriginValid
 from django.urls import path
 import os
 from channels.routing import get_default_application
+from channels.http import AsgiHandler
 import django
 from messaging.consumers import ChatMessageConsumer, NotificationConsumer
 
@@ -12,7 +13,7 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 django.setup()
 
 application = ProtocolTypeRouter({
-    # "http": get_default_application(),
+    "http": AsgiHandler(),
     "websocket": AllowedHostsOriginValidator(
         AuthMiddlewareStack(
             URLRouter(

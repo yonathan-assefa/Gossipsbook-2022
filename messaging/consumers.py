@@ -111,10 +111,6 @@ class NotificationConsumer(AsyncConsumer):
             })
             return 
 
-        await self.send({
-            "type": "websocket.accept"
-        })
-
         username = user.username
         
         chat_room = f"notification_room_{username}"
@@ -124,6 +120,11 @@ class NotificationConsumer(AsyncConsumer):
             chat_room,
             self.channel_name
         )
+
+        await self.send({
+            "type": "websocket.accept"
+        })
+
 
     async def websocket_receive(self, event):
         print("RECEIVED -> ", event)

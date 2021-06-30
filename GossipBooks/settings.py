@@ -160,7 +160,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 20
 }
 
 
@@ -193,6 +193,18 @@ SOCIALACCOUNT_PROVIDERS = {
 #         },
 #     },
 # }
+
+
+# URI = "redis://:pfc3fd3553a9df589d0185c19ffaa6d91f7276543b1c50b87e1c96f76653d80bd@ec2-3-211-45-171.compute-1.amazonaws.com:10220"
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [URI],
+#         },
+#     }
+# } 
 
 
 CHANNEL_LAYERS = {
