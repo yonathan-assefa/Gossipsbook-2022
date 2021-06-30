@@ -6,7 +6,10 @@ function listenToSocket(){
     console.log(loc);
 
     var ws = "ws:"
-    if (loc.protocol == "https") ws = "wss:"
+    console.log(loc.protocol);
+    if (loc.protocol == "https:"){
+         ws = "wss:"
+    };
 
     var url = `${ws}//${loc.host}/notifications/`;
     console.log(url);
