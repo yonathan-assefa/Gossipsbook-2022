@@ -1,9 +1,30 @@
 from .models import Notifications
 from gossips.models import GossipsModel, Comments, Reply, User
+from users.models import Profile, CircleFollower
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+
+
+@receiver(signal=post_save, sender=CircleFollower)
+def create_notification_for_circle_follower(sender, instance, created, **kwargs):
+    if created:
+        follower_user = instance.user
+        following_user = instance.circle.user
+        message = f"{follower_user.username} started Following Your Circle..."
+        obj = Notifications.objects.create(user=following_user, message=message)
+        return obj
+
+
+@receiver(signal=m2m_changed, sender=Profile.followers.through)
+def create_notification_for_follower(sender, instance, action, **kwargs):
+    if action == "pre_add":
+        user_following = sender.objects.last().user
+        user_main = instance.user
+        message = f"{user_following.username} has Started Following You..."
+        obj = Notifications.objects.create(user=user_main, message=message)
+        return obj
 
 
 @receiver(signal=m2m_changed, sender=GossipsModel.true.through)
@@ -15,7 +36,7 @@ def create_notification_for_true(sender, instance, action, **kwargs):
     if action == "pre_add":
         user = instance.author
         # chat_user = User.objects.get(username="chat_user")
-        message = f"{sender.objects.last().user} is Following You..."
+        message = f"{sender.objects.last().user} Has voted True in your Gossip..."
         obj = Notifications.objects.create(user=user, message=message)
         return obj
 
@@ -47,14 +68,12 @@ def create_notification_for_commenting(sender, instance, created, **kwargs):
         return obj
 
 
-
 @receiver(signal=post_save, sender=Notifications)
 def websocket_not(sender, instance, created, **kwargs):
     channel_layer = get_channel_layer()
     username = instance.user.username
     chat_room = f"notification_room_{username}"
     instance_data = instance.message
-    print("\n")
     print("\n")
     print("From Signal", chat_room)
 
@@ -67,5 +86,4 @@ def websocket_not(sender, instance, created, **kwargs):
         }
     )
 
-    print("\n")
     print("\n")
