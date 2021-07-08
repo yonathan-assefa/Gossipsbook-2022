@@ -1,6 +1,6 @@
+from django.shortcuts import get_object_or_404
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.fields import related
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -180,3 +180,92 @@ class Status(models.Model):
             self.slug = slugify("Status| " + create_random_slug(number=12))
 
         return super().save(*args, **kwargs)
+
+
+
+class FriendManager(models.Manager):
+
+    def can_a_friend_model_be_created(self, user1_username, user2_username):
+        user1 = get_object_or_404(User, username=user1_username)
+        user2 = get_object_or_404(User, username=user2_username)
+
+        qs = self.filter(user1=user1, user2=user2)
+        if qs.exists():
+            return False
+
+        qs = self.filter(user1=user2, user2=user1)
+        if qs.exists():
+            return False
+
+        return True
+
+
+class Friend(models.Model):
+    user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user1_frnds")
+    user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user2_frnds")
+    slug = models.SlugField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    objects = FriendManager()
+
+    class Meta:
+        ordering = ["-date_created", "-id"]
+        unique_together = ["user1", "user2"]
+
+    def save(self, *args, **kwargs):
+        slug = self.slug
+        user1 = self.user1.username
+        user2 = self.user2.username
+        if (slug == None) or (slug == "") or (slug == "slug"):
+            self.slug = slugify(user1 + user2 + create_random_slug())
+
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user1} <- Friends -> {self.user2}"
+
+
+
+class FriendRequestManager(models.Manager):
+
+    def filter_friend_request(self, user1_username, user2_username):
+        user1 = get_object_or_404(User, username=user1_username)
+        user2 = get_object_or_404(User, username=user2_username)
+
+        qs = self.filter(to_user=user1, sent_by_user=user2)
+        if qs.exists():
+            return qs.get()
+
+        qs = self.filter(to_user=user2, sent_by_user=user1)
+        if qs.exists():
+            return qs.get()
+
+        return None
+
+
+class FriendRequest(models.Model):
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friend_requested")
+    sent_by_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_by_user_requested")
+    slug = models.SlugField()
+    accepted = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    objects = FriendRequestManager()
+
+    class Meta:
+        ordering = ["-date_created", "-id"]
+        unique_together = ["to_user", "sent_by_user"]
+
+    def save(self, *args, **kwargs):
+        slug = self.slug
+        to_user = self.to_user.username
+        sent_by_user = self.sent_by_user.username
+        if (slug == None) or (slug == "") or (slug == "slug"):
+            self.slug = slugify(to_user + sent_by_user + create_random_slug())
+
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.to_user} <- Friends-Requested <- {self.sent_by_user}"
