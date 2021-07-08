@@ -1,8 +1,22 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from gossips.models import GossipsModel, Comments, Tags, Reply
-from .UserSerializers import UserSerializer, UserLeastInfoSerializer
+from .UserSerializers import UserSerializer, UserLeastInfoSerializer, UserForGossipsSerializer
 from .CircleSerializers import CircleForGossipSerializer
+from django.urls import reverse
+import random
+
+
+def get_reverse_url(name, **kwargs):
+    url = reverse(name, kwargs=kwargs)
+    live = False
+    
+    if live:
+        url = f"https://www.gossipsbook.com{url}"
+        return url
+
+    url = f"http://127.0.0.1:8000{url}"
+    return url
 
 
 def percentage_true(serializer):
@@ -48,13 +62,16 @@ class GossipListCreateSerializer(ModelSerializer):
     """ 
     Serializer For ListView and CreateView of the API...
     """
-    author = UserSerializer(read_only=True)
+    author = UserForGossipsSerializer(read_only=True)
     circle = CircleForGossipSerializer(read_only=True)
     image = serializers.ImageField(read_only=True)
     slug = serializers.SlugField(read_only=True)
+    gossip_url = serializers.SerializerMethodField()
+    gossip_comments_list_url = serializers.SerializerMethodField()
     shares = serializers.IntegerField(read_only=True)
     percentage_true = serializers.SerializerMethodField()
     percentage_false = serializers.SerializerMethodField()
+    footer_comments = serializers.SerializerMethodField()
 
     class Meta:
         model = GossipsModel
@@ -65,6 +82,24 @@ class GossipListCreateSerializer(ModelSerializer):
 
     def get_percentage_false(self, serializer):
         return percentage_false(serializer)
+
+    def get_gossip_url(self, serializer):
+        return get_reverse_url("Gossip-Update", gossip_slug=serializer.slug)
+
+    def get_gossip_comments_list_url(self, serializer):
+
+        return get_reverse_url("Comment-Gossip", gossip_slug=serializer.slug)
+
+    def get_footer_comments(self, serializer):
+        qs = serializer.comments_set.all()
+        try:
+            user = random.choice(qs).author
+        except IndexError:
+            return None
+
+        statement = f"{user.username} and {qs.count()-1} has commented on it"
+        return statement
+
 
 
 class GossipRetrieveSerializer(ModelSerializer):
@@ -77,10 +112,15 @@ class GossipRetrieveSerializer(ModelSerializer):
     percentage_false = serializers.SerializerMethodField()
     voted_true = serializers.SerializerMethodField()
     voted_false = serializers.SerializerMethodField()
+    comments_url = serializers.SerializerMethodField()
 
     class Meta:
         model = GossipsModel
         exclude = ["q_tags", "true", "false", ]
+
+    def get_comments_url(self, serializer):
+
+        return get_reverse_url("Comment-Gossip", gossip_slug=serializer.slug)
 
     def get_percentage_true(self, serializer):
         return percentage_true(serializer)

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework.generics import (
     ListAPIView, CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, 
     RetrieveAPIView, 
@@ -28,8 +29,6 @@ class GossipsListCreateAPIView(ListCreateAPIView):
     def get_queryset(self):
         qs = GossipsModel.objects.all()
         qs = self.filter_qs_by_parameter(qs)
-        print(" [REQUEST] ", self.request.get_host())
-        print(self.request.get_raw_uri(), self.request.get_raw_uri())
         return qs
 
     def filter_qs_by_parameter(self, qs):
@@ -59,6 +58,14 @@ class GossipsListCreateAPIView(ListCreateAPIView):
             if not qs.exists():
                 raise NotFound("No Gossips has been Found with this Title...")
 
+        user_username = self.request.query_params.get("username")
+        if user_username is not None:
+            user_username = str(user_username)
+            user = get_object_or_rest_404(User, username=user_username, msg="Invalid Name for User Provided")
+            qs = qs.filter(author=user)
+            if not qs.exists():
+                raise NotFound("No Gossips for this User has been Found...")
+        
         return qs
 
     def perform_create(self, serializer):
@@ -69,7 +76,7 @@ class GossipsListCreateAPIView(ListCreateAPIView):
 class GossipUpdateAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = GossipSerializers.GossipRetrieveSerializer
     lookup_url_kwarg = "gossip_slug"
-    permission_classes = [IsAuthenticatedOrReadOnly, permissions.IsGossipOfCurrentUserOrReadOnly]
+    permission_classes = [IsAuthenticated, permissions.IsGossipOfCurrentUserOrReadOnly]
 
     def get_queryset(self):
         pass

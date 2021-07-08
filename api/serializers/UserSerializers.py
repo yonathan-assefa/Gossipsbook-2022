@@ -5,6 +5,19 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from users.models import Profile, Interests, Qualification, WorkExperience
 from ..models import RestToken
+from django.urls import reverse
+
+
+def get_reverse_url(name, **kwargs):
+    url = reverse(name, kwargs=kwargs)
+    live = False
+    
+    if live:
+        url = f"https://www.gossipsbook.com{url}"
+        return url
+
+    url = f"http://127.0.0.1:8000{url}"
+    return url
 
 
 class UserRegistrationSerializer(ModelSerializer):
@@ -148,10 +161,32 @@ class UserProfileDisplaySerializer(ModelSerializer):
 
 class UserSerializer(ModelSerializer):
     profile = UserProfileDisplaySerializer(read_only=True)
+    author_url = serializers.SerializerMethodField()
+    gossips_list_url = serializers.SerializerMethodField(method_name="get_user_gossips")
 
     class Meta:
         model = User
-        fields = ["username", "email", "first_name", "last_name", "profile"]
+        fields = ["username", "email", "first_name", "last_name", "profile", "gossips_list_url", "author_url"]
+
+    def get_user_gossips(self, serializer):
+        url = f"https://www.gossipsbook.com/api/gossips/list-create/?username={serializer.username}"
+        return url
+
+    def get_author_url(self, serializer):
+        return get_reverse_url("User-Retrieve", username=serializer.username)
+
+
+
+class UserForGossipsSerializer(ModelSerializer):
+    profile = UserProfileDisplaySerializer(read_only=True)
+    author_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "first_name", "last_name", "profile", "author_url"]
+
+    def get_author_url(self, serializer):
+        return get_reverse_url("User-Retrieve", username=serializer.username)
 
 
 class RestTokenSerializer(ModelSerializer):

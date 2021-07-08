@@ -31,7 +31,7 @@ urlpatterns = [
 
     path("current-user/profile/retrieve/", UserViews.CurrentUserProfileRetrieveAPIView.as_view(), ),
     path("current-user/profile/update/", UserViews.CurrentUserProfileUpdateAPIView.as_view(), ),
-    path("user/retrieve/<username>/", UserViews.UserRetrieveAndUpdatePropertyAPIView.as_view(), ),
+    path("user/retrieve/<username>/", UserViews.UserRetrieveAndUpdatePropertyAPIView.as_view(), name="User-Retrieve"),
     path("current-user/feed/", UserViews.CurrentUserFeedListAPIView.as_view(), ),
     path("current-user/Interests/list-create/", UserViews.CurrentUserProfileAddInterestAPIView.as_view(), ),
     path("current-user/profile/experiences/", UserViews.UserProfileWorkExperienceListCreateAPIView.as_view(), ),
@@ -41,7 +41,7 @@ urlpatterns = [
     path("interest/list/", UserViews.InterestListAPIView.as_view(), ),
 
     path("circle/list-create/", CircleViews.CircleListCreateAPIView.as_view(), ),
-    path("circle/retrieve/<circle_slug>/", CircleViews.CircleRetrieveAPIView.as_view(), ),
+    path("circle/retrieve/<circle_slug>/", CircleViews.CircleRetrieveAPIView.as_view(), name="Circle-Retrieve"),
     path("circle/<circle_slug>/gossips/list/", CircleViews.GossipsForCircleListAPIView.as_view(), ),
     path("current-user/circle/gossips/list-create/", CircleViews.GossipsForCircleListCreateAPIView.as_view(), ),
 

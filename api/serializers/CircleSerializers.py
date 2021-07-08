@@ -3,7 +3,19 @@ from gossips.models import GossipsModel
 from ..serializers.UserSerializers import OnlyUserSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+# from .GossipSerializers import get_reverse_url
+from django.urls import reverse
 
+def get_reverse_url(name, **kwargs):
+    url = reverse(name, kwargs=kwargs)
+    live = False
+    
+    if live:
+        url = f"https://www.gossipsbook.com{url}"
+        return url
+
+    url = f"http://127.0.0.1:8000{url}"
+    return url
 
 class CircleSerializer(ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
@@ -38,10 +50,14 @@ class CirclePhotoSerializer(ModelSerializer):
 
 class CircleForGossipSerializer(ModelSerializer):
     picture = CirclePhotoSerializer(read_only=True)
+    circle_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Circle
-        fields = ["user", "title", "slug", "date_created", "picture"]
+        fields = ["user", "title", "slug", "circle_url", "date_created", "picture"]
+
+    def get_circle_url(self, serializer):
+        return get_reverse_url("Circle-Retrieve", circle_slug=serializer.slug)
 
 
 class CurrentUserCircleSerializer(ModelSerializer):
