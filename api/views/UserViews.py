@@ -4,7 +4,7 @@ from rest_framework.generics import (
 )
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from users.models import Interests, Profile, Qualification, WorkExperience
+from users.models import Interests, Profile, Qualification, WorkExperience, FriendRequest, Friend
 from gossips.models import GossipsModel
 from django.contrib.auth.models import User
 from ..serializers import UserSerializers, GossipSerializers
@@ -298,3 +298,56 @@ class UserTokenConfirmAPIView(CreateAPIView):
         }
         return Response(response)
 
+
+class FriendListAPIView(ListAPIView):
+    serializer_class = UserSerializers.FriendsListSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        u1 = self.request.user
+        qs = Friend.objects.none()
+        qs |= u1.user1_frnds.all()
+        qs |= u1.user2_frnds.all()
+
+        return qs
+
+
+class FriendRequestListAPIView(ListAPIView):
+    serializer_class = UserSerializers.FriendRequestListSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        u1 = self.request.user
+        qs = u1.friend_requested.all() 
+
+        return qs
+
+
+class FriendRequestCreateAPIView(CreateAPIView):
+    serializer_class = UserSerializers.FriendRequestCreateSerializer
+    permission_classes = [IsAuthenticated, ]
+    lookup_url_kwarg = "username"
+
+    def get_other_user(self):
+        username = self.kwargs.get(self.lookup_url_kwarg)
+        obj = get_object_or_rest_404(User, username=username, msg="User with this Name is not Found...")
+        return obj
+
+    def perform_create(self, serializer):
+        username1 = self.kwargs.get(self.lookup_url_kwarg)
+        username2 = self.request.user.username
+        filt_qs = FriendRequest.objects.filter_friend_request(user1_username=username1, user2_username=username2)
+        if filt_qs is None:
+            user2 = User.objects.get(username=username1)
+            serializer.save(sent_by_user=self.request.user, to_user=user2)
+            return serializer
+
+        if filt_qs.to_user == self.request.user:
+            raise PermissionDenied("The User has already sent a Friend Request to you...")
+
+        raise PermissionDenied("You already sent a Friend Request to him/her...")
+        
+
+    def create(self, request, *args, **kwargs):
+        self.get_other_user()
+        return super().create(request, *args, **kwargs)

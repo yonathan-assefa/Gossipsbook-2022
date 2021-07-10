@@ -8,7 +8,7 @@ from django.urls import reverse
 
 def get_reverse_url(name, **kwargs):
     url = reverse(name, kwargs=kwargs)
-    live = False
+    live = True
     
     if live:
         url = f"https://www.gossipsbook.com{url}"

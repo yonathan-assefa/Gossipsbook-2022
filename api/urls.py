@@ -38,6 +38,10 @@ urlpatterns = [
     path("current-user/profile/qualifications/", UserViews.UserProfileQualificationListCreateAPIView.as_view(), ),
     path("current-user/circle/update/", CircleViews.CurrentUserCircleRetrieveAPIView.as_view(), ),
 
+    path("current-user/friends/list/", UserViews.FriendListAPIView.as_view(), ),
+    path("current-user/friend-request/list/", UserViews.FriendRequestListAPIView.as_view(), ),
+    path("current-user/friend-request/create/<username>/", UserViews.FriendRequestCreateAPIView.as_view(), ),
+
     path("interest/list/", UserViews.InterestListAPIView.as_view(), ),
 
     path("circle/list-create/", CircleViews.CircleListCreateAPIView.as_view(), ),

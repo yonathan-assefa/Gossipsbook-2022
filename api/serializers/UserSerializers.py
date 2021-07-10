@@ -3,7 +3,7 @@ from django.utils import tree
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from users.models import Profile, Interests, Qualification, WorkExperience
+from users.models import Profile, Interests, Qualification, WorkExperience, Friend, FriendRequest
 from ..models import RestToken
 from django.urls import reverse
 
@@ -225,4 +225,36 @@ class UserWithProfileSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ["username", "email", "first_name", "last_name", "profile"]
+
+
+
+class FriendsListSerializer(ModelSerializer):
+    user1 = UserSerializer(read_only=True)
+    user2 = UserSerializer(read_only=True)
+    slug = serializers.SlugField(read_only=True)
+
+    class Meta:
+        model = Friend
+        fields = "__all__"
+
+
+class FriendRequestListSerializer(ModelSerializer):
+    sent_by_user = UserSerializer(read_only=True)
+    slug = serializers.SlugField(read_only=True)
+    accepted = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = FriendRequest
+        exclude = ["to_user", ]
+
+
+class FriendRequestCreateSerializer(ModelSerializer):
+    to_user = UserSerializer(read_only=True)
+    sent_by_user = UserSerializer(read_only=True)
+    slug = serializers.SlugField(read_only=True)
+    accepted = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = FriendRequest
+        fields = "__all__"
 
