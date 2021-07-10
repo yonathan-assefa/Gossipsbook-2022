@@ -105,16 +105,29 @@ class CurrentUserFeedListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        qs = self.get_followers_feed_ordered()
+        qs = self.get_user_feeds_orderly_arranged()
         return qs
 
-    def get_followers_feed_ordered(self):
-        user_profile = self.request.user.profile
-        following_qs = user_profile.following.all()
+    def get_user_feeds_orderly_arranged(self):
         qs = GossipsModel.objects.none()
-        for following_user in following_qs:
-            qs |= following_user.gossip_author.all()
+        curr_user = self.request.user
         
+        frnd_qs = Friend.objects.none()
+        frnd_qs |= curr_user.user1_frnds.all()
+        frnd_qs |= curr_user.user2_frnds.all()
+
+        users_list = []
+        for i in frnd_qs:
+            user1 = i.user1
+            user2 = i.user2
+            if user1 == curr_user:
+                users_list.append(user2)
+            else:
+                users_list.append(user1)
+
+        for i in users_list:
+            qs |= i.gossip_author.all()
+
         return qs.order_by("-date_published", "-date_updated")
 
 
