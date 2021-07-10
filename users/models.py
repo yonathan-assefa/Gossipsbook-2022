@@ -97,7 +97,7 @@ class Circle(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="circle")
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
-    followers = models.ManyToManyField(User, through="CircleFollower", related_name="user_followers")
+    followers = models.ManyToManyField(User, through="CircleFollower", related_name="user_circle_followers")
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 

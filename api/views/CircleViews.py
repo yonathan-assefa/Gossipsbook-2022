@@ -106,7 +106,7 @@ class CircleRetrieveAPIView(RetrieveUpdateAPIView):
                 return Response(data, status=status.HTTP_200_OK)
             
             else:
-                raise ValidationError("Invalid Parameter for `prop` provided...")
+                raise ValidationError("Invalid Parameter for `prop` provided it can only accept [`follow`, `unfollow`, `check`]...")
 
             obj.save()
         

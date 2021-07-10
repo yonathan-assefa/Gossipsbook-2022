@@ -17,10 +17,12 @@ def get_reverse_url(name, **kwargs):
     url = f"http://127.0.0.1:8000{url}"
     return url
 
+
 class CircleSerializer(ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     slug = serializers.SlugField(read_only=True)
     followers = serializers.SerializerMethodField()
+    circle_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Circle
@@ -30,6 +32,10 @@ class CircleSerializer(ModelSerializer):
         followers_qs = serializer.followers.all()[:3]
         ser = OnlyUserSerializer(followers_qs, many=True)
         return ser.data
+
+    def get_circle_url(self, serializer):
+
+        return get_reverse_url("Circle-Retrieve", circle_slug=serializer.slug)
 
 
 class CircleInfoSerializer(ModelSerializer):
