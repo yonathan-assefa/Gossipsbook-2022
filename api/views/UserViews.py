@@ -1,3 +1,5 @@
+from rest_framework.serializers import Serializer
+from messaging import serializers
 from rest_framework.generics import (
     ListAPIView, CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, 
     RetrieveAPIView, 
@@ -351,3 +353,39 @@ class FriendRequestCreateAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         self.get_other_user()
         return super().create(request, *args, **kwargs)
+
+
+class FriendRequestUpdateAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializers.FriendRequestListSerializer
+    permission_classes = [IsAuthenticated, permissions.FriendRequestUpdatePermission]
+    lookup_url_kwarg = "username"
+
+    def get_user(self):
+        username = self.kwargs.get(self.lookup_url_kwarg)
+        obj = get_object_or_rest_404(User, username=username, msg="User with this Username is not Found")
+        return obj
+
+    def get_object(self):
+        other_user = self.get_user()
+        user = self.request.user
+        qs = user.friend_requested.filter(sent_by_user=other_user).filter(accepted=False)
+        if qs.exists():
+            return qs.get()
+
+        raise NotFound("This User did not send a friend request")
+
+    def perform_update(self, serializer):
+        serializer.save(accepted=True)
+
+    def update(self, request, *args, **kwargs):
+        request_prop = self.request.query_params.get("request")
+        if request_prop is not None:
+            request_prop = str(request_prop).lower()
+            if request_prop == "accepted":
+                return super().update(request, *args, **kwargs)
+
+            elif request_prop == "rejected":
+                return super().delete(request, *args, **kwargs)
+
+            raise PermissionDenied("request can have arguments of [`accepted`, `rejected`]...")
+        raise PermissionDenied("No query parameter of request is provided...")
