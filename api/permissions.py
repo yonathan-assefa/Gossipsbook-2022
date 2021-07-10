@@ -2,8 +2,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.exceptions import PermissionDenied
 
+
 SAFE_METHODS_WITH_PUT = ("GET", "OPTIONS", "HEAD", "PUT", "PATCH")
 SAFE_METHODS_WITH_POST = ("GET", "OPTIONS", "HEAD", "POST")
+SAFE_METHODS_WITH_DELETE = ("GET", "OPTIONS", "HEAD", "DELETE")
 
 
 class IsGossipOfCurrentUserOrReadOnly(BasePermission):
@@ -114,5 +116,14 @@ class DoCircleBelongToCurrentUser(BasePermission):
 class FriendRequestUpdatePermission(BasePermission):
 
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS_WITH_PUT:
-            return True
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj.sent_by_user:
+            return request.method in SAFE_METHODS_WITH_DELETE
+
+        elif request.user == obj.to_user:
+            return request.method in SAFE_METHODS_WITH_PUT
+
+        return False
+

@@ -233,11 +233,11 @@ class FriendRequestManager(models.Manager):
         user1 = get_object_or_404(User, username=user1_username)
         user2 = get_object_or_404(User, username=user2_username)
 
-        qs = self.filter(to_user=user1, sent_by_user=user2)
+        qs = self.filter(to_user=user1, sent_by_user=user2, accepted=False)
         if qs.exists():
             return qs.get()
 
-        qs = self.filter(to_user=user2, sent_by_user=user1)
+        qs = self.filter(to_user=user2, sent_by_user=user1, accepted=False)
         if qs.exists():
             return qs.get()
 

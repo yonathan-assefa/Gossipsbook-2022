@@ -368,9 +368,9 @@ class FriendRequestUpdateAPIView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         other_user = self.get_user()
         user = self.request.user
-        qs = user.friend_requested.filter(sent_by_user=other_user).filter(accepted=False)
-        if qs.exists():
-            return qs.get()
+        qs = FriendRequest.objects.filter_friend_request(user.username, other_user.username)
+        if qs is not None:
+            return qs
 
         raise NotFound("This User did not send a friend request")
 
