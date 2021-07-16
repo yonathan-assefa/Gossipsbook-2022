@@ -121,7 +121,7 @@ class CircleInfo(models.Model):
     )
     circle = models.OneToOneField(Circle, on_delete=models.CASCADE, related_name="info")
     description = models.TextField(null=True)
-    category = models.CharField(max_length=2, choices=CATEGORY, null=True)
+    category = models.CharField(max_length=2, choices=CATEGORY, null=True, default="CY")
     verified = models.BooleanField(default=False)
     bio = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
@@ -133,8 +133,8 @@ class CircleInfo(models.Model):
 
 class CirclePhoto(models.Model):
     circle = models.OneToOneField(Circle, on_delete=models.CASCADE, related_name="picture")
-    profile_pic = models.ImageField(upload_to="circle/profile-pic")
-    cover_pic = models.ImageField(upload_to="circle/cover-pic")
+    profile_pic = models.ImageField(upload_to="circle/profile-pic", default="circle/profile-pic/default.jpg")
+    cover_pic = models.ImageField(upload_to="circle/cover-pic", default="circle/cover-pic/default.jpg")
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):

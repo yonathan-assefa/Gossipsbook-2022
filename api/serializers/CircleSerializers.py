@@ -23,6 +23,7 @@ class CircleSerializer(ModelSerializer):
     slug = serializers.SlugField(read_only=True)
     followers = serializers.SerializerMethodField()
     circle_url = serializers.SerializerMethodField()
+    circle_gossips_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Circle
@@ -33,13 +34,16 @@ class CircleSerializer(ModelSerializer):
         ser = OnlyUserSerializer(followers_qs, many=True)
         return ser.data
 
-    def get_circle_url(self, serializer):
+    def get_circle_gossips_url(self, serializer):
+        return get_reverse_url("Circle-Gossips-List", circle_slug=serializer.slug)
 
+    def get_circle_url(self, serializer):
         return get_reverse_url("Circle-Retrieve", circle_slug=serializer.slug)
 
 
 class CircleInfoSerializer(ModelSerializer):
     circle = serializers.StringRelatedField(read_only=True)
+    verified = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = CircleInfo

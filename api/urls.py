@@ -47,7 +47,7 @@ urlpatterns = [
 
     path("circle/list-create/", CircleViews.CircleListCreateAPIView.as_view(), name="Circle-List"),
     path("circle/retrieve/<circle_slug>/", CircleViews.CircleRetrieveAPIView.as_view(), name="Circle-Retrieve"),
-    path("circle/<circle_slug>/gossips/list/", CircleViews.GossipsForCircleListAPIView.as_view(), ),
+    path("circle/<circle_slug>/gossips/list/", CircleViews.GossipsForCircleListAPIView.as_view(), name="Circle-Gossips-List"),
     path("current-user/circle/gossips/list-create/", CircleViews.GossipsForCircleListCreateAPIView.as_view(), ),
 
     path("status/list-create/", CircleViews.StatusListCreateAPIView.as_view()),

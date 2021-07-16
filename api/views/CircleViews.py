@@ -65,6 +65,18 @@ class CurrentUserCircleRetrieveAPIView(RetrieveUpdateDestroyAPIView):
 
         return obj
 
+    def update(self, request, *args, **kwargs):
+        prop = self.request.query_params.get("property", None)
+        if prop is not None:
+            if prop == "image":
+                self.serializer_class = CircleSerializers.CirclePhotoSerializer
+            elif prop == "info" or prop == "information":
+                self.serializer_class = CircleSerializers.CircleInfoSerializer
+            else:
+                raise PermissionDenied("Invalid arguments for Property Provided it only accepts [`image`, `info`]")
+
+        return super().update(request, *args, **kwargs)
+
 
 class CircleRetrieveAPIView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, permissions.DoCircleBelongToCurrentUser]

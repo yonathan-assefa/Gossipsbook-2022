@@ -4,7 +4,7 @@ from rest_framework.generics import (
     RetrieveAPIView, 
 )
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from controls.models import FalseInformation, RFRModel, FeedbackModel
 from ..serializers import ControlsSerializer
 from rest_framework import status
@@ -37,7 +37,7 @@ class FalseInformationListAPIView(ListAPIView):
 
 class FalseInformationCreateAPIView(CreateAPIView):
     serializer_class = ControlsSerializer.FalseInformationListSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [AllowAny, ]
     lookup_url_kwarg = "gossip_slug"
 
     def perform_create(self, serializer):
