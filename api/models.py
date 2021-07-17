@@ -30,11 +30,11 @@ class RestToken(models.Model):
         if not self.token:
             self.token = new_token
 
-        send_mail(
-            "Reset Password",
-            f"Your Reset Token is {new_token}",
-            "gossipsbook.in@gmail.com",
-            [user_email, ]
-        )
+            send_mail(
+                "Reset Password",
+                f"Your Reset Token is {new_token}",
+                "gossipsbook.in@gmail.com",
+                [user_email, ]
+            )
 
         return super().save(*args, **kwargs)

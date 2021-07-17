@@ -130,12 +130,27 @@ class UserRetrieveSerializer(ModelSerializer):
     profile = UserProfileRetrieveAllSerializer(read_only=True)
     work_experiences = UserWorkExperienceSerializer(read_only=True, many=True)
     qualifications = UserQualificationSerializer(read_only=True, many=True)
+    truth_speaking = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ["username", "first_name", "last_name", 
-                  "profile", "work_experiences", "qualifications"]
+                  "profile", "work_experiences", "qualifications", "truth_speaking"]
 
+    def get_truth_speaking(self, serializer):
+        qs = serializer.gossip_author.all()
+        total = 0
+        for i in qs:
+            total += i.percent_true
+
+        if total == 0:
+            return None
+
+        try:
+            a = total / qs.count()
+            return a
+        except ZeroDivisionError:
+            return None
 
 class UserProfileSerializer(ModelSerializer):
     user = OnlyUserSerializer(read_only=True)
@@ -163,10 +178,27 @@ class UserSerializer(ModelSerializer):
     profile = UserProfileDisplaySerializer(read_only=True)
     author_url = serializers.SerializerMethodField()
     gossips_list_url = serializers.SerializerMethodField(method_name="get_user_gossips")
+    truth_speaking = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ["username", "email", "first_name", "last_name", "profile", "gossips_list_url", "author_url"]
+        fields = ["username", "email", "first_name", "last_name", "profile", 
+                            "gossips_list_url", "author_url", "truth_speaking"]
+
+    def get_truth_speaking(self, serializer):
+        qs = serializer.gossip_author.all()
+        total = 0
+        for i in qs:
+            total += i.percent_true
+
+        if total == 0:
+            return None
+
+        try:
+            a = total / qs.count()
+            return a
+        except ZeroDivisionError:
+            return None
 
     def get_user_gossips(self, serializer):
         url = f"https://www.gossipsbook.com/api/gossips/list-create/?username={serializer.username}"

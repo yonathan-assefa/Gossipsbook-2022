@@ -229,7 +229,7 @@ CHANNEL_LAYERS = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-api_key = env.get_value("api_key")
+api_key = "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"
 SENDGRID_API_KEY = api_key
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
