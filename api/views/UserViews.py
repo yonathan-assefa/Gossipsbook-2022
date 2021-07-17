@@ -16,6 +16,7 @@ from .. import pagination
 from .. import permissions
 from ..models import RestToken
 from smtplib import SMTPAuthenticationError
+from django.contrib.auth import authenticate
 
 
 def get_object_or_rest_404(klass, msg="NotFound", **kwargs):
@@ -62,6 +63,36 @@ class UserRegistrationView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+class PasswordChangeAPIView(CreateAPIView):
+    serializer_class = UserSerializers.PasswordChangeSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def perform_create(self, serializer):
+        data = serializer.data
+        print(data)
+        password = data["prev_password"]
+        username = self.request.user
+        user = authenticate(username=username, password=password)
+        if user:
+            passcode_new = data["password_confirm"]
+            user.set_password(passcode_new)
+            user.save()
+            return user
+        
+        raise PermissionDenied("Your Previous Password did not match...")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        data = {
+            "status": "ok",
+            "changed": True
+        }
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
+
+
 
 class CurrentUserProfileUpdateAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializers.UserProfileSerializer
@@ -78,14 +109,25 @@ class CurrentUserProfileUpdateAPIView(RetrieveUpdateDestroyAPIView):
                 self.serializer_class = UserSerializers.UserProfileImageSerializer
                 return True
 
+            if param == "core":
+                self.serializer_class = UserSerializers.OnlyUserSerializer
+                return True
+
             raise ValidationError("only [image, ] can be found in fields...")
 
         return False
 
     def get_object(self):
         user = self.request.user
-        self.modify_serializer_by_parameter()
+        if self.modify_serializer_by_parameter():
+            return user
+            
         return user.profile
+
+    def update(self, request, *args, **kwargs):
+        self.modify_serializer_by_parameter()
+
+        return super().update(request, *args, **kwargs)
 
 
 class CurrentUserProfileRetrieveAPIView(RetrieveAPIView):

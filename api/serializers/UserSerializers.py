@@ -50,10 +50,30 @@ class UserRegistrationSerializer(ModelSerializer):
 
 
 class OnlyUserSerializer(ModelSerializer):
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
 
     class Meta:
         model = User
         fields = ["username", "email", "first_name", "last_name", ]
+
+
+class PasswordChangeSerializer(ModelSerializer):
+    prev_password = serializers.CharField()
+    password = serializers.CharField()
+    password_confirm = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["prev_password", "password", "password_confirm"]
+
+    def validate(self, values):
+        p1 = values["password"]
+        p2 = values["password_confirm"]
+        if not p1 == p2:
+            raise serializers.ValidationError("Both the Passwords did not match")
+
+        return values
 
 
 class InterestSerializer(ModelSerializer):

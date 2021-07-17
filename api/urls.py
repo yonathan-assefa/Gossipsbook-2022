@@ -26,6 +26,7 @@ urlpatterns = [
     path("feedback/retrieve/<feedback_id>/", ControlsViews.FeedbackRetrieveAPIView.as_view(), ),
 
     path("user/auth/registration/", UserViews.UserRegistrationView.as_view(), ),
+    path("user/auth/password-change/", UserViews.PasswordChangeAPIView.as_view(), ),
     path("user/auth/password-reset/", UserViews.UserSendMailGeneratorAPIView.as_view(), ),
     path("user/auth/password-reset/confirm-token/", UserViews.UserTokenConfirmAPIView.as_view(), ),
 

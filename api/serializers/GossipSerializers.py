@@ -72,6 +72,7 @@ class GossipListCreateSerializer(ModelSerializer):
     percentage_true = serializers.SerializerMethodField()
     percentage_false = serializers.SerializerMethodField()
     footer_comments = serializers.SerializerMethodField()
+    total_votes = serializers.SerializerMethodField()
 
     class Meta:
         model = GossipsModel
@@ -79,6 +80,9 @@ class GossipListCreateSerializer(ModelSerializer):
 
     def get_percentage_true(self, serializer):
         return percentage_true(serializer)
+
+    def get_total_votes(self, serializer):
+        return int(serializer.true.count()) + int(serializer.false.count())
 
     def get_percentage_false(self, serializer):
         return percentage_false(serializer)
