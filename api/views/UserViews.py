@@ -128,9 +128,9 @@ class CurrentUserFeedListAPIView(ListAPIView):
         for i in users_list:
             qs |= i.gossip_author.all()
 
-        circle_qs = curr_user.user_circle_followers.all()
-        for i in circle_qs:
-            qs |= i.circle_gossips.all()
+        # circle_qs = curr_user.user_circle_followers.all()
+        # for i in circle_qs:
+        #     qs |= i.circle_gossips.all()
 
         return qs.order_by("-date_published", "-date_updated")
 
