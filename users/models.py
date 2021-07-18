@@ -61,10 +61,10 @@ class Profile(models.Model):
         try:
             if self.image:
                 img = Image.open(self.image.path)
-            if img.height > 1000 or img.width > 1000:
-                output = (600, 600)
-                img.thumbnail(output)
-                img.save(self.image.path)
+                if img.height > 1000 or img.width > 1000:
+                    output = (600, 600)
+                    img.thumbnail(output)
+                    img.save(self.image.path)
         except FileNotFoundError:
             pass
 

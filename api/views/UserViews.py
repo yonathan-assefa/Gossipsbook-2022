@@ -213,6 +213,28 @@ class UserRetrieveAndUpdatePropertyAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         pass
 
+    def is_friend(self, user_obj):
+        curr_user = self.request.user
+        if user_obj == curr_user:
+            return None
+
+        qs = curr_user.user1_frnds.filter(user2=user_obj)
+        if qs.exists():
+            return True
+
+        qs = curr_user.user2_frnds.all(user1=user_obj)
+        if qs.exists():
+            return True
+
+        return False
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data["is_friend"] = self.is_friend(instance)
+        return Response(data)
+
     def get_object(self):
         return self.get_user_profile().user
 

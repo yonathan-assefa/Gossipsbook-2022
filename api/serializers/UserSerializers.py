@@ -199,11 +199,13 @@ class UserSerializer(ModelSerializer):
     author_url = serializers.SerializerMethodField()
     gossips_list_url = serializers.SerializerMethodField(method_name="get_user_gossips")
     truth_speaking = serializers.SerializerMethodField()
+    is_friend = serializers.CharField(default=False)
 
     class Meta:
         model = User
         fields = ["username", "email", "first_name", "last_name", "profile", 
-                            "gossips_list_url", "author_url", "truth_speaking"]
+                        "gossips_list_url", "author_url", "truth_speaking", "is_friend"]
+
 
     def get_truth_speaking(self, serializer):
         qs = serializer.gossip_author.all()

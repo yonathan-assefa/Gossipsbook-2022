@@ -5,12 +5,34 @@ from django.utils.text import slugify
 from django.contrib import messages
 from django.db.models import Sum
 from django.urls import reverse
+from users.models import Friend
 
 from .models import GossipsModel, Comments
 
 
+@login_required
 def gossips_index(request):
-    gossips_all = GossipsModel.objects.all().order_by('-date_published')
+    gossips_all = GossipsModel.objects.all()
+    qs = GossipsModel.objects.none()
+    curr_user = request.user
+    frnd_qs = Friend.objects.none()
+    frnd_qs |= curr_user.user1_frnds.all()
+    frnd_qs |= curr_user.user2_frnds.all()
+
+    users_list = []
+    for i in frnd_qs:
+        user1 = i.user1
+        user2 = i.user2
+        if user1 == curr_user:
+            users_list.append(user2)
+        else:
+            users_list.append(user1)
+
+    for i in users_list:
+        qs |= gossips_all.filter(author=i)
+
+    gossips_all = qs
+    
     paginator = Paginator(gossips_all, 3)
     page = request.GET.get('page')
 
