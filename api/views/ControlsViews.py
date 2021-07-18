@@ -32,10 +32,19 @@ class FalseInformationListAPIView(ListAPIView):
     pagination_class = pagination.Results10SetPagination
 
     def get_false_gossips(self):
-        return GossipsModel.objects.all().order_by("date_published")[:3]
+        qs = GossipsModel.objects.all()
+        lst = []
+        for i in qs:
+            total = i.true.count() + i.false.count()
+            if total > 1000:
+                lst.append(i)
+
+
+        return sorted(lst, key=lambda x: x.false.count(), reverse=True)
 
     def get_queryset(self):
-        return 
+        false_gossips = self.get_false_gossips()
+        return GossipsModel.objects.all().order_by("date_published")[:3]
 
 
 class FalseInformationCreateAPIView(CreateAPIView):

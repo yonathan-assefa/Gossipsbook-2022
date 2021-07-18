@@ -45,7 +45,7 @@ class Profile(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     birthday = models.CharField(max_length=20, null=True, blank=True)
-    martial_status = models.BooleanField(default=False)
+    martial_status = models.CharField(max_length=50, null=True, blank=True)
     twitter_link = models.CharField(max_length=2040, null=True, blank=True)
     facebook_link = models.CharField(max_length=2040, null=True, blank=True)
     instagram_link = models.CharField(max_length=2040, null=True, blank=True)
