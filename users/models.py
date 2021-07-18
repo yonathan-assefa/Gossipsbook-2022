@@ -44,6 +44,12 @@ class Profile(models.Model):
     following = models.ManyToManyField(User, related_name='following', blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    birthday = models.CharField(max_length=20, null=True, blank=True)
+    martial_status = models.BooleanField(default=False)
+    twitter_link = models.CharField(max_length=2040, null=True, blank=True)
+    facebook_link = models.CharField(max_length=2040, null=True, blank=True)
+    instagram_link = models.CharField(max_length=2040, null=True, blank=True)
+    gender = models.CharField(max_length=30, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} profile"
@@ -52,12 +58,15 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         super().save( *args, **kwargs)
         
-        if self.image:
-            img = Image.open(self.image.path)
+        try:
+            if self.image:
+                img = Image.open(self.image.path)
             if img.height > 1000 or img.width > 1000:
                 output = (600, 600)
                 img.thumbnail(output)
                 img.save(self.image.path)
+        except FileNotFoundError:
+            pass
 
 def user_profile(sender, instance, created, **kwargs):
     if created:

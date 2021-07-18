@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError, NotFound, PermissionDenie
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from controls.models import FalseInformation, RFRModel, FeedbackModel
 from ..serializers import ControlsSerializer
+from ..serializers.GossipSerializers import GossipListCreateSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,13 +27,15 @@ def get_slug(self):
 
 
 class FalseInformationListAPIView(ListAPIView):
-    serializer_class = ControlsSerializer.FalseInformationListSerializer
+    serializer_class = GossipListCreateSerializer
     permission_classes = [IsAuthenticated, ]
     pagination_class = pagination.Results10SetPagination
 
+    def get_false_gossips(self):
+        return GossipsModel.objects.all().order_by("date_published")[:3]
+
     def get_queryset(self):
-        qs = FalseInformation.objects.all()
-        return qs
+        return 
 
 
 class FalseInformationCreateAPIView(CreateAPIView):
