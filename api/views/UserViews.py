@@ -222,7 +222,7 @@ class UserRetrieveAndUpdatePropertyAPIView(RetrieveUpdateDestroyAPIView):
         if qs.exists():
             return True
 
-        qs = curr_user.user2_frnds.all(user1=user_obj)
+        qs = curr_user.user2_frnds.filter(user1=user_obj)
         if qs.exists():
             return True
 

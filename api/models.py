@@ -11,6 +11,9 @@ def create_token(number=8):
 
 
 class RestToken(models.Model):
+    """
+    This Token is being generated when User Forgots His Password...
+    """
     token = models.CharField(max_length=50)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
