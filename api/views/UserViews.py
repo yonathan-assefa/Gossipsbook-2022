@@ -143,7 +143,7 @@ class CurrentUserProfileRetrieveAPIView(RetrieveAPIView):
 
 class CurrentUserFeedListAPIView(ListAPIView):
     serializer_class = GossipSerializers.GossipListCreateSerializer
-    pagination_class = pagination.Results20SetPagination
+    # pagination_class = pagination.Results20SetPagination
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
@@ -175,6 +175,36 @@ class CurrentUserFeedListAPIView(ListAPIView):
         #     qs |= i.circle_gossips.all()
 
         return qs.order_by("-date_published", "-date_updated")
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            print(page)
+            serializer = self.get_serializer(page, many=True)
+            data = serializer.data
+            count = 0
+            curr_user = self.request.user.username
+            for i in data:
+                gossip = page[count]
+                print(gossip)
+                qs = gossip.true.filter(username=curr_user)
+                if qs.exists():
+                    print(True)
+                    i["user_vote"] = True
+                elif gossip.false.filter(username=curr_user).exists():
+                    print(False)
+                    i["user_vote"] = False
+                else:
+                    print(None)
+                    i["user_vote"] = None
+                print()
+                count += 1
+            return self.get_paginated_response(data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class UserProfileWorkExperienceListCreateAPIView(ListCreateAPIView):

@@ -234,14 +234,23 @@ class UserSerializer(ModelSerializer):
 class UserForGossipsSerializer(ModelSerializer):
     profile = UserProfileDisplaySerializer(read_only=True)
     author_url = serializers.SerializerMethodField()
+    designation = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ["username", "email", "first_name", "last_name", "profile", "author_url"]
+        fields = ["username", "email", "first_name", "last_name", "profile", "author_url", "designation"]
 
     def get_author_url(self, serializer):
         return get_reverse_url("User-Retrieve", username=serializer.username)
 
+    def get_designation(self, serializer):
+        try:
+            designation = serializer.profile.designation
+            if (designation == "") or (designation == None):
+                return None
+            return designation
+        except:
+            return None
 
 class RestTokenSerializer(ModelSerializer):
     password = serializers.CharField(required=True)

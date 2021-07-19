@@ -73,6 +73,7 @@ class GossipListCreateSerializer(ModelSerializer):
     percentage_false = serializers.SerializerMethodField()
     footer_comments = serializers.SerializerMethodField()
     total_votes = serializers.SerializerMethodField()
+    user_vote = serializers.ReadOnlyField(default=None)
 
     class Meta:
         model = GossipsModel
