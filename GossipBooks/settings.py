@@ -96,7 +96,7 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = "GossipBooks.asgi.application"
+ASGI_APPLICATION = "GossipBooks.routing.application"
 WSGI_APPLICATION = 'GossipBooks.wsgi.application'
 
 
@@ -196,21 +196,22 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # URI = "redis://:pfc3fd3553a9df589d0185c19ffaa6d91f7276543b1c50b87e1c96f76653d80bd@ec2-3-211-45-171.compute-1.amazonaws.com:10220"
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-#         },
-#     }
-# } 
-
-
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"  # Good for testing and local server purposes
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+        "ROUTING": "GossipBooks.routing.application"
     }
-}
+} 
+
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"  # Good for testing and local server purposes
+#     }
+# }
 
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_PORT = 587
