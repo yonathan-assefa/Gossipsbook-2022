@@ -199,6 +199,9 @@ class CurrentUserFeedListAPIView(ListAPIView):
                 else:
                     print(None)
                     i["user_vote"] = None
+                objection_qs = gossip.objections.filter(username=curr_user)
+                if objection_qs.exists():
+                    i["user_objected"] = True
                 print()
                 count += 1
             return self.get_paginated_response(data)

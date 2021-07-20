@@ -75,13 +75,18 @@ class GossipListCreateSerializer(ModelSerializer):
     total_votes = serializers.SerializerMethodField()
     user_vote = serializers.ReadOnlyField(default=None)
     total_comments = serializers.SerializerMethodField()
+    total_objections = serializers.SerializerMethodField()
+    user_objected = serializers.ReadOnlyField(default=False)
 
     class Meta:
         model = GossipsModel
-        exclude = ["q_tags", "true", "false",]
+        exclude = ["q_tags", "true", "false", "objections"]
 
     def get_percentage_true(self, serializer):
         return percentage_true(serializer)
+
+    def get_total_objections(self, serializer):
+        return serializer.objections.count()
 
     def get_total_votes(self, serializer):
         return int(serializer.true.count()) + int(serializer.false.count())

@@ -49,6 +49,7 @@ class GossipsModel(models.Model):
     link = models.CharField(max_length=2040, blank=True, null=True)  # 2040 is the maximum length for a link...
     from_question_user = models.CharField(max_length=255, blank=True, null=True)
     from_question_answer_provider = models.CharField(max_length=255, blank=True, null=True)
+    objections = models.ManyToManyField(User, related_name="user_objected", through="GossipObjection", blank=True)
 
     def get_absolute_url(self):
         return reverse('gossips:gossip_detail', kwargs={'gossip_slug': self.slug})
@@ -136,6 +137,18 @@ class Reply(models.Model):
     date_published = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+
+class GossipObjection(models.Model):
+    gossipsmodel = models.ForeignKey(GossipsModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_published = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["gossipsmodel", "user"]
+
+    def __str__(self):
+        return f"{self.user} objected {self.gossipsmodel.title}"
 
 # signal that creates and saves gossips slug upon creation of a gossip
 def save_gossip_slug(sender, instance, *args, **kwargs):
