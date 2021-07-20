@@ -5,11 +5,11 @@ from rest_framework.generics import (
 )
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from gossips.models import GossipsModel, Comments, Tags, Reply
+from gossips.models import GossipObjection, GossipsModel, Comments, Tags, Reply
 from ..serializers import GossipSerializers
 from ..pagination import Results20SetPagination
 from .. import permissions
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.response import Response
 
 
@@ -322,3 +322,25 @@ class ReplyRetrieveAPIView(RetrieveUpdateDestroyAPIView):
             return super().delete(*args, **kwargs)
 
         raise PermissionDenied("Current User Do not Permission to Update Other's Reply")
+
+
+class GossipObjectionAPIView(ListCreateAPIView):
+    serializer_class = GossipSerializers.GossipObjectionSerializer
+    lookup_url_kwarg = "gossip_slug"
+
+    def get_queryset(self):
+        gossip = self.get_gossip()
+        return gossip.gossipobjection.all()
+
+    def perform_create(self, serializer):
+        gossip = self.get_gossip()
+        serializer.save(user=self.request.user, gossipsmodel=gossip)
+
+    def get_gossip(self):
+        gossip_slug = self.kwargs.get(self.lookup_url_kwarg)
+        qs = GossipsModel.objects.filter(slug=gossip_slug)
+        if qs.exists():
+            print(qs)
+            return qs.get()
+
+        raise NotFound("Gossip with this Slug is not Found...")

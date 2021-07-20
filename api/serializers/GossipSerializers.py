@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from gossips.models import GossipsModel, Comments, Tags, Reply
+from gossips.models import GossipsModel, Comments, Tags, Reply, GossipObjection
 from .UserSerializers import UserSerializer, UserLeastInfoSerializer, UserForGossipsSerializer
 from .CircleSerializers import CircleForGossipSerializer
 from django.urls import reverse
@@ -152,6 +152,14 @@ class GossipRetrieveSerializer(ModelSerializer):
         ser = UserLeastInfoSerializer(qs, many=True)
         return ser.data
         
+
+class GossipObjectionSerializer(ModelSerializer):
+    gossipsmodel = serializers.StringRelatedField(read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = GossipObjection
+        fields = "__all__"
 
 class GossipUpdateProviderSerializer(ModelSerializer):
 
