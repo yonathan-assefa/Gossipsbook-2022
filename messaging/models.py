@@ -106,6 +106,8 @@ class Notifications(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_nots")    
     message = models.TextField()
     slug = models.SlugField()
+    url = models.CharField(max_length=2040, blank=True, null=True)
+    seen = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 

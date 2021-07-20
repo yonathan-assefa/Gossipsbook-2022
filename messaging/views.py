@@ -1,5 +1,5 @@
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required
 from .models import ChatingRoom, Notifications
 from api.views.GossipViews import get_object_or_rest_404
 from api.serializers.UserSerializers import UserWithProfileSerializer
-from .serializers import ChatingRoomMessageListSerializer, NotificationSerializer
+from .serializers import (ChatingRoomMessageListSerializer, NotificationSerializer, 
+                            ChatingRoomSerializer)
 import websocket
 
 
@@ -97,6 +98,21 @@ class RoomListAPIView(ListAPIView):
         return qs
 
 
+class UserRoomListAPIView(ListAPIView):
+    serializer_class = ChatingRoomSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_chating_room_qs(self):
+        user = self.request.user
+        qs = ChatingRoom.objects.none()
+        qs |= user.user1_chating_room.all()
+        qs |= user.user2_chating_room.all()
+        return qs
+
+    def get_queryset(self):
+        return self.get_chating_room_qs()
+
+
 class NotificationsListAPIView(ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated, ]
@@ -105,3 +121,28 @@ class NotificationsListAPIView(ListAPIView):
         user = self.request.user
         qs = user.user_nots.all()
         return qs
+
+
+class NotificationRetrieveAPIView(RetrieveAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated, ]
+    lookup_url_kwarg = "not_id"
+
+    def get_notification_qs(self):
+        user = self.request.user
+        qs = user.user_nots.all()
+        return qs
+
+    def get_notification(self):
+        not_id = self.kwargs.get(self.lookup_url_kwarg)
+        qs = self.get_notification_qs.filter(id=not_id)
+        if qs.exists():
+            return qs.get()
+
+        raise NotFound("Notification With this Id is not Found...")
+
+    def get_object(self):
+        notify_obj = self.get_notification()
+        notify_obj.seen = True
+        notify_obj.save()
+        return notify_obj

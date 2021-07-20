@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.urls import path, include
 from django.conf.urls import url
 from .views import GossipViews, ControlsViews, UserViews, CircleViews
-from messaging.views import RoomMessagesListAPIView, RoomListAPIView, NotificationsListAPIView
+from messaging.views import (RoomMessagesListAPIView, RoomListAPIView, NotificationsListAPIView,
+                            NotificationRetrieveAPIView, UserRoomListAPIView)
 
 urlpatterns = [
     path("authentication/", include("rest_framework.urls")),
@@ -56,5 +57,7 @@ urlpatterns = [
 
     path("room/<username>/", RoomMessagesListAPIView.as_view(), ),
     path("room/", RoomListAPIView.as_view(), ),
-    path("notifications/", NotificationsListAPIView.as_view(), )
+    path("user/room/", UserRoomListAPIView.as_view(), ),
+    path("notifications/", NotificationsListAPIView.as_view(), ),
+    path("notifications/<not_id>/", NotificationRetrieveAPIView.as_view(), )
 ]

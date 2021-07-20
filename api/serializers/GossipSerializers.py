@@ -74,6 +74,7 @@ class GossipListCreateSerializer(ModelSerializer):
     footer_comments = serializers.SerializerMethodField()
     total_votes = serializers.SerializerMethodField()
     user_vote = serializers.ReadOnlyField(default=None)
+    total_comments = serializers.SerializerMethodField()
 
     class Meta:
         model = GossipsModel
@@ -92,7 +93,6 @@ class GossipListCreateSerializer(ModelSerializer):
         return get_reverse_url("Gossip-Update", gossip_slug=serializer.slug)
 
     def get_gossip_comments_list_url(self, serializer):
-
         return get_reverse_url("Comment-Gossip", gossip_slug=serializer.slug)
 
     def get_footer_comments(self, serializer):
@@ -104,6 +104,10 @@ class GossipListCreateSerializer(ModelSerializer):
 
         statement = f"{user.username} and {qs.count()-1} has commented on it"
         return statement
+
+    def get_total_comments(self, serializer):
+        qs = serializer.comments_set.all()
+        return qs.count()
 
 
 

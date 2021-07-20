@@ -22,6 +22,13 @@ class ChatingRoomMessageListSerializer(ModelSerializer):
         return user_1.username
 
 
+class ChatingRoomSerializer(ModelSerializer):
+
+    class Meta:
+        model = ChatingRoom
+        fields = "__all__"
+
+
 class NotificationSerializer(ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
 
