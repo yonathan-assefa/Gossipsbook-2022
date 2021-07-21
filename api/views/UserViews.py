@@ -226,7 +226,7 @@ class UserProfileWorkExperienceListCreateAPIView(ListCreateAPIView):
 
 class UserWorkExperienceRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializers.UserWorkExperienceSerializer
-    permission_classes = [IsAuthenticated, permissions.DoesObjectToBelongCurrentUser]
+    permission_classes = [IsAuthenticated, ]
     lookup_url_kwarg = "experience_id"
 
     def get_queryset(self):
@@ -238,11 +238,12 @@ class UserWorkExperienceRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     def get_experience(self):
         work_id = self.kwargs.get(self.lookup_url_kwarg)
         msg = "Work-Experience with this id is not found."
-        try:
-            obj = get_object_or_rest_404(WorkExperience, msg=msg, user=self.request.user, id=work_id)
-        except :
-            raise PermissionDenied("Invalid Info Provided...")
-        return obj
+        user = self.request.user
+        qs = user.work_experiences.filter(id=work_id)
+        if qs.exists():
+            return qs.get()
+
+        raise NotFound(msg)
 
 
 class UserProfileQualificationListCreateAPIView(ListCreateAPIView):
@@ -261,7 +262,7 @@ class UserProfileQualificationListCreateAPIView(ListCreateAPIView):
 
 class UserQualificationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializers.UserQualificationSerializer
-    permission_classes = [IsAuthenticated, permissions.DoesObjectToBelongCurrentUser]
+    permission_classes = [IsAuthenticated, ]
     lookup_url_kwarg = "qualification_id"
 
     def get_queryset(self):
@@ -272,12 +273,12 @@ class UserQualificationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
 
     def get_qualification(self):
         work_id = self.kwargs.get(self.lookup_url_kwarg)
-        msg = "User-Qualification with this id is not found."
-        try:
-            obj = get_object_or_rest_404(Qualification, msg=msg, user=self.request.user, id=work_id)
-        except :
-            raise PermissionDenied("Invalid Info Provided...")
-        return obj
+        user = self.request.user
+        qs = user.qualifications.filter(id=work_id)
+        if qs.exists():
+            return qs.get()
+
+        raise NotFound("Qualification with this Id is not Found in user's Profile.")
 
 
 class UserRetrieveAndUpdatePropertyAPIView(RetrieveUpdateDestroyAPIView):

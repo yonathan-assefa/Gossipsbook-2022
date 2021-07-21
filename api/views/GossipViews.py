@@ -330,7 +330,7 @@ class GossipObjectionListCreateAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         gossip = self.get_gossip()
-        return gossip.gossipobjection.all()
+        return gossip.gossipobjection_set.all()
 
     def perform_create(self, serializer):
         gossip = self.get_gossip()
@@ -352,7 +352,7 @@ class GossipObjectionRetrieveAPIView(ListCreateAPIView):
 
     def get_objections(self):
         gossip = self.get_gossip()
-        qs = gossip.gossipobjection.filter(user=self.request.user)
+        qs = gossip.gossipobjection_set.filter(user=self.request.user)
         if qs.exists():
             return qs.get()
 
