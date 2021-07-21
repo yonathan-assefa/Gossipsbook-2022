@@ -239,7 +239,7 @@ class UserWorkExperienceRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         work_id = self.kwargs.get(self.lookup_url_kwarg)
         msg = "Work-Experience with this id is not found."
         try:
-            obj = get_object_or_rest_404(WorkExperience, id=work_id, msg=msg)
+            obj = get_object_or_rest_404(WorkExperience, msg=msg, user=self.request.user, id=work_id)
         except :
             raise PermissionDenied("Invalid Info Provided...")
         return obj
@@ -274,7 +274,7 @@ class UserQualificationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         work_id = self.kwargs.get(self.lookup_url_kwarg)
         msg = "User-Qualification with this id is not found."
         try:
-            obj = get_object_or_rest_404(Qualification, id=work_id, msg=msg)
+            obj = get_object_or_rest_404(Qualification, msg=msg, user=self.request.user, id=work_id)
         except :
             raise PermissionDenied("Invalid Info Provided...")
         return obj

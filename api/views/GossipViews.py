@@ -324,7 +324,7 @@ class ReplyRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         raise PermissionDenied("Current User Do not Permission to Update Other's Reply")
 
 
-class GossipObjectionAPIView(ListCreateAPIView):
+class GossipObjectionListCreateAPIView(ListCreateAPIView):
     serializer_class = GossipSerializers.GossipObjectionSerializer
     lookup_url_kwarg = "gossip_slug"
 
@@ -344,3 +344,27 @@ class GossipObjectionAPIView(ListCreateAPIView):
             return qs.get()
 
         raise NotFound("Gossip with this Slug is not Found...")
+
+
+class GossipObjectionRetrieveAPIView(ListCreateAPIView):
+    serializer_class = GossipSerializers.GossipObjectionSerializer
+    lookup_url_kwarg = "gossip_slug"
+
+    def get_objections(self):
+        gossip = self.get_gossip()
+        qs = gossip.gossipobjection.filter(user=self.request.user)
+        if qs.exists():
+            return qs.get()
+
+        raise NotFound("User did not Object this Gossip...")
+
+    def get_gossip(self):
+        gossip_slug = self.kwargs.get(self.lookup_url_kwarg)
+        qs = GossipsModel.objects.filter(slug=gossip_slug)
+        if qs.exists():
+            return qs.get()
+
+        raise NotFound("Gossip with this Slug is not Found...")
+
+    def get_object(self):
+        return self.get_objections()

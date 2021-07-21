@@ -16,7 +16,8 @@ urlpatterns = [
     path("gossips/<gossip_slug>/tags/list-create/", GossipViews.GossipAddTagAPIView.as_view(), ),
     path("gossips/comments/<comment_id>/replies/list-create/", GossipViews.ReplyToCommentListCreateAPIView.as_view(), ),
     path("gossips/replies/<reply_id>/update-retrieve/", GossipViews.ReplyRetrieveAPIView.as_view(), ),
-    path("gossips/objections/<gossip_slug>/", GossipViews.GossipObjectionAPIView.as_view(), ),
+    path("gossips/objections/<gossip_slug>/", GossipViews.GossipObjectionListCreateAPIView.as_view(), ),
+    path("gossips/objections/<gossip_slug>/user/retrieve/", GossipViews.GossipObjectionRetrieveAPIView.as_view(), ),
 
     path("false-info/gossip/", ControlsViews.FalseInformationListAPIView.as_view()),
     path("false-info/gossip/<gossip_slug>/", ControlsViews.FalseInformationCreateAPIView.as_view(), ),
