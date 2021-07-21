@@ -260,7 +260,7 @@ class UserProfileQualificationListCreateAPIView(ListCreateAPIView):
 
 
 class UserQualificationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
-    serializer_class = UserSerializers.UserWorkExperienceSerializer
+    serializer_class = UserSerializers.UserQualificationSerializer
     permission_classes = [IsAuthenticated, permissions.DoesObjectToBelongCurrentUser]
     lookup_url_kwarg = "qualification_id"
 

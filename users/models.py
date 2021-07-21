@@ -54,7 +54,6 @@ class Profile(models.Model):
     def __str__(self):
         return f"{self.user.username} profile"
 
-    # reduce the size of the image if it's more than 1000px
     def save(self, *args, **kwargs):
         super().save( *args, **kwargs)
         
@@ -64,7 +63,7 @@ class Profile(models.Model):
                 if img.height > 1000 or img.width > 1000:
                     output = (600, 600)
                     img.thumbnail(output)
-                    img.save(self.image.path)
+                    img.save(self.image.path)  # reduce the size of the image if it's more than 1000px
         except FileNotFoundError:
             pass
 
