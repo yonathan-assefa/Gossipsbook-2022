@@ -224,6 +224,27 @@ class UserProfileWorkExperienceListCreateAPIView(ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
+class UserWorkExperienceRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializers.UserWorkExperienceSerializer
+    permission_classes = [IsAuthenticated, permissions.DoesObjectToBelongCurrentUser]
+    lookup_url_kwarg = "experience_id"
+
+    def get_queryset(self):
+        pass
+
+    def get_object(self):
+        return self.get_experience()
+
+    def get_experience(self):
+        work_id = self.kwargs.get(self.lookup_url_kwarg)
+        msg = "Work-Experience with this id is not found."
+        try:
+            obj = get_object_or_rest_404(WorkExperience, id=work_id, msg=msg)
+        except :
+            raise PermissionDenied("Invalid Info Provided...")
+        return obj
+
+
 class UserProfileQualificationListCreateAPIView(ListCreateAPIView):
     serializer_class = UserSerializers.UserQualificationSerializer
     permission_classes = [IsAuthenticated, ]
@@ -236,6 +257,27 @@ class UserProfileQualificationListCreateAPIView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class UserQualificationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializers.UserWorkExperienceSerializer
+    permission_classes = [IsAuthenticated, permissions.DoesObjectToBelongCurrentUser]
+    lookup_url_kwarg = "qualification_id"
+
+    def get_queryset(self):
+        pass
+
+    def get_object(self):
+        return self.get_qualification()
+
+    def get_qualification(self):
+        work_id = self.kwargs.get(self.lookup_url_kwarg)
+        msg = "User-Qualification with this id is not found."
+        try:
+            obj = get_object_or_rest_404(Qualification, id=work_id, msg=msg)
+        except :
+            raise PermissionDenied("Invalid Info Provided...")
+        return obj
 
 
 class UserRetrieveAndUpdatePropertyAPIView(RetrieveUpdateDestroyAPIView):

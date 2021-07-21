@@ -41,6 +41,46 @@ def create_notification_for_true(sender, instance, action, **kwargs):
         return obj
 
 
+@receiver(signal=m2m_changed, sender=GossipsModel.false.through)
+def create_notification_for_true(sender, instance, action, **kwargs):
+    if action == "pre_add":
+        user = instance.author
+        message = f"{sender.objects.last().user} Has voted False in your Gossip..."
+        obj = Notifications.objects.create(user=user, message=message)
+        return obj
+
+
+# @receiver(signal=post_save, sender=GossipsModel)
+# def update_user_feed(sender, instance, created, **kwargs):
+#     if created:
+#         user = instance.author
+#         channel_layer = get_channel_layer()
+
+#         qs = user.user1_frnds.all()
+#         for i in qs:
+#             chat_room = f"notification_room_{i.user2.username}"
+#             async_to_sync(channel_layer.group_send)(
+#             chat_room,
+#             {
+#                 "type": "send.notification",
+#                 # "event": "Hello Signal World...",
+#                 "data": "New Gossips Available"
+#             }
+#         )
+        
+#         qs = user.user2_frnds.all()
+#         for i in qs:
+#             chat_room = f"notification_room_{i.user1.username}"
+#             async_to_sync(channel_layer.group_send)(
+#             chat_room,
+#             {
+#                 "type": "send.notification",
+#                 # "event": "Hello Signal World...",
+#                 "data": "New Gossips Available"
+#             }
+#         )
+
+
 @receiver(signal=post_save, sender=Reply)
 def create_notification_for_replying(sender, instance, created, **kwargs):
     if created:

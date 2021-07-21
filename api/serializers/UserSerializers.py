@@ -91,17 +91,19 @@ class InterestDisplaySerializer(ModelSerializer):
 
 
 class UserQualificationSerializer(ModelSerializer):
-
+    user = serializers.StringRelatedField(read_only=True)
+    
     class Meta:
         model = Qualification
-        exclude = ["id", "user"]
+        fields = "__all__"
 
 
 class UserWorkExperienceSerializer(ModelSerializer):
-
+    user = serializers.StringRelatedField(read_only=True)
+    
     class Meta:
         model = WorkExperience
-        exclude = ["id", "user"]
+        fields = "__all__"
 
 
 class UserProfileRetrieveAllSerializer(ModelSerializer):

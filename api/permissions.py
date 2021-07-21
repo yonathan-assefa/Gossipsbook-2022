@@ -69,6 +69,22 @@ class IsCurrentUserNotAuthenticated(BasePermission):
         return not request.user.is_authenticated
 
 
+class DoesObjectToBelongCurrentUser(BasePermission):
+    """
+    This Permission is used for the permissions to update
+                        Qualifications and Work-Experience...
+    """
+
+    def has_permission(self, request, view):
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+
+        return obj.user == request.user
+
+
 # Circle Permissions
 
 

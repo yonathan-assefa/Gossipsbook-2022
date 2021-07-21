@@ -23,6 +23,8 @@ class ChatingRoomMessageListSerializer(ModelSerializer):
 
 
 class ChatingRoomSerializer(ModelSerializer):
+    user1 = serializers.StringRelatedField(read_only=True)
+    user2 = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = ChatingRoom

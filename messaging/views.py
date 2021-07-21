@@ -135,7 +135,7 @@ class NotificationRetrieveAPIView(RetrieveAPIView):
 
     def get_notification(self):
         not_id = self.kwargs.get(self.lookup_url_kwarg)
-        qs = self.get_notification_qs.filter(id=not_id)
+        qs = self.get_notification_qs().filter(id=not_id)
         if qs.exists():
             return qs.get()
 

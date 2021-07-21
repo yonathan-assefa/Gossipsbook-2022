@@ -37,8 +37,12 @@ urlpatterns = [
     path("user/retrieve/<username>/", UserViews.UserRetrieveAndUpdatePropertyAPIView.as_view(), name="User-Retrieve"),
     path("current-user/feed/", UserViews.CurrentUserFeedListAPIView.as_view(), ),
     path("current-user/Interests/list-create/", UserViews.CurrentUserProfileAddInterestAPIView.as_view(), ),
+
     path("current-user/profile/experiences/", UserViews.UserProfileWorkExperienceListCreateAPIView.as_view(), ),
+    path("current-user/profile/experiences/<experience_id>/", UserViews.UserWorkExperienceRetrieveAPIView.as_view(), ),
     path("current-user/profile/qualifications/", UserViews.UserProfileQualificationListCreateAPIView.as_view(), ),
+    path("current-user/profile/qualifications/<qualification_id>/", UserViews.UserQualificationRetrieveAPIView.as_view(), ),
+
     path("current-user/circle/update/", CircleViews.CurrentUserCircleRetrieveAPIView.as_view(), ),
 
     path("current-user/friends/list/", UserViews.FriendListAPIView.as_view(), ),
