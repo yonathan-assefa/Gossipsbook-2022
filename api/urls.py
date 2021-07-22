@@ -4,7 +4,7 @@ from django.urls import path, include
 from django.conf.urls import url
 from .views import GossipViews, ControlsViews, UserViews, CircleViews
 from messaging.views import (RoomMessagesListAPIView, RoomListAPIView, NotificationsListAPIView,
-                            NotificationRetrieveAPIView, UserRoomListAPIView)
+                            NotificationRetrieveAPIView, UserRoomListAPIView, UserChattingRoomAPIView)
 
 urlpatterns = [
     path("authentication/", include("rest_framework.urls")),
@@ -40,9 +40,9 @@ urlpatterns = [
     path("current-user/Interests/list-create/", UserViews.CurrentUserProfileAddInterestAPIView.as_view(), ),
 
     path("current-user/profile/experiences/", UserViews.UserProfileWorkExperienceListCreateAPIView.as_view(), ),
-    path("current-user/profile/experiences/<experience_id>/", UserViews.UserWorkExperienceRetrieveAPIView.as_view(), ),
+    path("current-user/profile/experiences/<experience_id>/", UserViews.handle_user_work_experience_object, ),
     path("current-user/profile/qualifications/", UserViews.UserProfileQualificationListCreateAPIView.as_view(), ),
-    path("current-user/profile/qualifications/<qualification_id>/", UserViews.UserQualificationRetrieveAPIView.as_view(), ),
+    path("current-user/profile/qualifications/<qualification_id>/", UserViews.handle_qualification_object, ),
 
     path("current-user/circle/update/", CircleViews.CurrentUserCircleRetrieveAPIView.as_view(), ),
 
@@ -63,7 +63,7 @@ urlpatterns = [
 
     path("room/<username>/", RoomMessagesListAPIView.as_view(), ),
     path("room/", RoomListAPIView.as_view(), ),
-    path("user/room/", UserRoomListAPIView.as_view(), ),
+    path("user/room/", UserChattingRoomAPIView.as_view(), ),
     path("notifications/", NotificationsListAPIView.as_view(), ),
     path("notifications/<not_id>/", NotificationRetrieveAPIView.as_view(), )
 ]

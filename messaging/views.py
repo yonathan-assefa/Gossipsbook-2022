@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import ChatingRoom, Notifications
 from api.views.GossipViews import get_object_or_rest_404
-from api.serializers.UserSerializers import UserWithProfileSerializer
+from api.serializers.UserSerializers import UserSerializer, UserWithProfileSerializer
 from .serializers import (ChatingRoomMessageListSerializer, NotificationSerializer, 
                             ChatingRoomSerializer)
 import websocket
@@ -111,6 +111,27 @@ class UserRoomListAPIView(ListAPIView):
 
     def get_queryset(self):
         return self.get_chating_room_qs()
+
+
+class UserChattingRoomAPIView(ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_rooms(self):
+        user = self.request.user
+        lst = []
+
+        qs = user.user1_chating_room.all()
+        for i in qs:
+            lst.append(i.user2)
+
+        qs = user.user2_chating_room.all()
+        for i in qs:
+            lst.append(i.user1)
+        
+        return lst
+
+    def get_queryset(self):
+        return self.get_rooms()
 
 
 class NotificationsListAPIView(ListAPIView):

@@ -4,6 +4,8 @@ from rest_framework.generics import (
     ListAPIView, CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, 
     RetrieveAPIView, 
 )
+from rest_framework.decorators import api_view
+from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from users.models import Interests, Profile, Qualification, WorkExperience, FriendRequest, Friend
@@ -246,6 +248,42 @@ class UserWorkExperienceRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         raise NotFound(msg)
 
 
+@api_view(http_method_names=["GET", "PUT", "DELETE", "PATCH"])
+@permission_classes([IsAuthenticated, ])
+def handle_user_work_experience_object(request, experience_id):
+    serializer_class = UserSerializers.UserWorkExperienceSerializer
+    user = request.user
+    try:
+        experience_id = int(experience_id)
+    except :
+        raise PermissionDenied("Invalid Format For int Provided...")
+
+    qs = user.work_experiences.filter(id=experience_id)
+    if not qs.exists():
+        raise NotFound("Work Experience with this id do not belong to current user.")    
+
+    obj = qs.get()
+    data = {}
+    if request.method == "PUT" or request.method == "PATCH":
+        serializer = serializer_class(instance=obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data["experience"] = serializer.data
+        data["task"] = "updated"
+        return Response(data, status.HTTP_200_OK)
+
+    if request.method == "DELETE":
+        serializer = serializer_class(instance=obj)
+        obj.delete()
+        print("DELETED OBJECT")
+        data["experience"] = serializer.data
+        data["task"] = "deleted"
+        return Response(data, status.HTTP_204_NO_CONTENT)
+
+    data["result"] = serializer_class(obj).data
+    return Response(data=data, status=status.HTTP_200_OK)
+
+
 class UserProfileQualificationListCreateAPIView(ListCreateAPIView):
     serializer_class = UserSerializers.UserQualificationSerializer
     permission_classes = [IsAuthenticated, ]
@@ -279,6 +317,46 @@ class UserQualificationRetrieveAPIView(RetrieveUpdateDestroyAPIView):
             return qs.get()
 
         raise NotFound("Qualification with this Id is not Found in user's Profile.")
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        print("Deleted")
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(http_method_names=["GET", "PUT", "DELETE", "PATCH"])
+@permission_classes([IsAuthenticated, ])
+def handle_qualification_object(request, qualification_id):
+    serializer_class = UserSerializers.UserQualificationSerializer
+    user = request.user
+    try:
+        qualification_id = int(qualification_id)
+    except :
+        raise PermissionDenied("Invalid Format For int Provided...")
+    qs = user.qualifications.filter(id=qualification_id)
+    if not qs.exists():
+        raise NotFound("Qualification with this id do not belong to current user.")    
+
+    obj = qs.get()
+    data = {}
+    if request.method == "PUT" or request.method == "PATCH":
+        serializer = serializer_class(instance=obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data["qualification"] = serializer.data
+        data["task"] = "updated"
+        return Response(data, status.HTTP_200_OK)
+
+    if request.method == "DELETE":
+        serializer = serializer_class(instance=obj)
+        obj.delete()
+        print("DELETED OBJECT")
+        data["qualification"] = serializer.data
+        data["task"] = "deleted"
+        return Response(data, status.HTTP_204_NO_CONTENT)
+    data["result"] = serializer_class(obj).data
+    return Response(data=data, status=status.HTTP_200_OK)
 
 
 class UserRetrieveAndUpdatePropertyAPIView(RetrieveUpdateDestroyAPIView):
@@ -470,6 +548,25 @@ class FriendListAPIView(ListAPIView):
 
         return qs
 
+
+@api_view(http_method_names=["GET"])
+@permission_classes([IsAuthenticated, ])
+def friend_list_api_view(request):
+    user = request.user
+    lst = []
+    serializer_class = UserSerializers.UserSerializer
+
+    qs = user.user1_frnds.all()
+    for i in qs:
+        lst.append(i.user2)
+
+    qs = user.user2_frnds.all()
+    for i in qs:
+        lst.append(i.user1)
+
+    serializer = serializer_class(lst, many=True)    
+    return Response(serializer.data, status.HTTP_200_OK)
+    
 
 class FriendRequestListAPIView(ListAPIView):
     serializer_class = UserSerializers.FriendRequestListSerializer
