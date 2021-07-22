@@ -91,6 +91,31 @@ class GossipUpdateAPIView(RetrieveUpdateDestroyAPIView):
         self.modify_serializer_by_parameter() 
         return obj
 
+    def retrieve(self, *args, **kwargs):
+        instance = self.get_object()
+        user = self.request.user
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        qs = instance.true.filter(username=user.username)
+
+        if qs.exists():
+            data["current_user_vote"] = True
+            
+        elif instance.false.filter(username=user.username).exists():
+            data["current_user_vote"] = False
+
+        if instance.gossipobjection_set.filter(user=user).exists():
+            data["has_objected"] = True
+
+        gossip_author = instance.author
+        if user.user1_frnds.filter(user2=gossip_author).exists():
+            data["is_friend"] = True
+
+        elif user.user2_frnds.filter(user1=gossip_author).exists():
+            data["is_friend"] = True
+
+        return Response(data)
+
     def modify_serializer_by_parameter(self):
         prop = self.request.query_params.get("property")
         if prop is not None:

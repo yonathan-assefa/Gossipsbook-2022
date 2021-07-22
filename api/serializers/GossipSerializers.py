@@ -127,14 +127,21 @@ class GossipRetrieveSerializer(ModelSerializer):
     voted_true = serializers.SerializerMethodField()
     voted_false = serializers.SerializerMethodField()
     comments_url = serializers.SerializerMethodField()
+    current_user_vote = serializers.ReadOnlyField(default=None)
+    trailing_comments = serializers.SerializerMethodField()
+    is_friend = serializers.ReadOnlyField(default=False)
+    has_objected = serializers.ReadOnlyField(default=False)
 
     class Meta:
         model = GossipsModel
-        exclude = ["q_tags", "true", "false", ]
+        exclude = ["q_tags", "true", "false", "objections"]
 
     def get_comments_url(self, serializer):
-
         return get_reverse_url("Comment-Gossip", gossip_slug=serializer.slug)
+
+    def get_trailing_comments(self, serializer):
+        serialized = CommentSerializer(serializer.comments_set.all()[:4], many=True)
+        return serialized.data
 
     def get_percentage_true(self, serializer):
         return percentage_true(serializer)
