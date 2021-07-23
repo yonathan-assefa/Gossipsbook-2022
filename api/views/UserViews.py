@@ -535,36 +535,39 @@ class UserTokenConfirmAPIView(CreateAPIView):
 
 
 class FriendListAPIView(ListAPIView):
-    serializer_class = UserSerializers.FriendsListSerializer
+    serializer_class = UserSerializers.UserSerializer
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        u1 = self.request.user
-        qs = Friend.objects.none()
-        qs |= u1.user1_frnds.all()
-        qs |= u1.user2_frnds.all()
+        return self.get_friends()
 
-        return qs
+    def get_friends(self):
+        user = self.request.user
+        lst = []
+        qs = user.user1_frnds.all()
+        for i in qs:
+            lst.append(i.user2)
 
+        qs = user.user2_frnds.all()
+        for i in qs:
+            lst.append(i.user1)
 
-@api_view(http_method_names=["GET"])
-@permission_classes([IsAuthenticated, ])
-def friend_list_api_view(request):
-    user = request.user
-    lst = []
-    serializer_class = UserSerializers.UserSerializer
+        return lst
 
-    qs = user.user1_frnds.all()
-    for i in qs:
-        lst.append(i.user2)
+    def list(self, *args, **kwargs):
+        queryset = self.get_queryset()
 
-    qs = user.user2_frnds.all()
-    for i in qs:
-        lst.append(i.user1)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            data = serializer.data
+            for i in data:
+                i.pop("is_friend")
+            return self.get_paginated_response(data)
 
-    serializer = serializer_class(lst, many=True)    
-    return Response(serializer.data, status.HTTP_200_OK)
-    
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class FriendRequestListAPIView(ListAPIView):
     serializer_class = UserSerializers.FriendRequestListSerializer
@@ -572,8 +575,7 @@ class FriendRequestListAPIView(ListAPIView):
 
     def get_queryset(self):
         u1 = self.request.user
-        qs = u1.friend_requested.all() 
-
+        qs = u1.friend_requested.filter(accepted=False) 
         return qs
 
 
@@ -620,9 +622,9 @@ class FriendRequestUpdateAPIView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         other_user = self.get_user()
         user = self.request.user
-        qs = FriendRequest.objects.filter_friend_request(user.username, other_user.username)
-        if qs is not None:
-            return qs
+        obj = FriendRequest.objects.filter_friend_request(user.username, other_user.username)
+        if obj is not None:
+            return obj
 
         raise NotFound("This User did not send a friend request")
 
@@ -633,11 +635,30 @@ class FriendRequestUpdateAPIView(RetrieveUpdateDestroyAPIView):
         request_prop = self.request.query_params.get("request")
         if request_prop is not None:
             request_prop = str(request_prop).lower()
+            curr_user = self.request.user
             if request_prop == "accepted":
-                return super().update(request, *args, **kwargs)
+                instance = self.get_object()
+                partial = kwargs.pop('partial', False)
+                if instance.to_user != curr_user:
+                    raise PermissionDenied("You cannot Accept The Friend Request You sent")
+                
+                serializer = self.get_serializer(instance, data=request.data, partial=partial)
+                serializer.is_valid(raise_exception=True)
+                self.perform_update(serializer)
+
+                if getattr(instance, '_prefetched_objects_cache', None):
+                    # If 'prefetch_related' has been applied to a queryset, we need to
+                    # forcibly invalidate the prefetch cache on the instance.
+                    instance._prefetched_objects_cache = {}
+
+                return Response(serializer.data)
 
             elif request_prop == "rejected":
-                return super().delete(request, *args, **kwargs)
+                instance = self.get_object()
+                if instance.to_user != curr_user:
+                    msg = "You cannot Reject The Friend Request You sent"
+                    raise PermissionDenied(msg)
+                return self.delete(request, *args, **kwargs)
 
             raise PermissionDenied("request can have arguments of [`accepted`, `rejected`]...")
         raise PermissionDenied("No query parameter of request is provided...")
