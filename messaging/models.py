@@ -103,11 +103,20 @@ class ChatingRoomMessage(models.Model):
 
 
 class Notifications(models.Model):
+    NOTIFICATION_CATEGORY = (
+        ("FR", "FRIEND_REQUEST"),
+        ("VT", "VOTED_TRUE"),
+        ("VF", "VOTED_FALSE"),
+        ("GC", "GOSSIP_COMMENT"),
+        ("CR", "COMMENT_REPLY"),
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_nots")    
     message = models.TextField()
     slug = models.SlugField()
     url = models.CharField(max_length=2040, blank=True, null=True)
     seen = models.BooleanField(default=False)
+    notification_type = models.CharField(max_length=2, choices=NOTIFICATION_CATEGORY)
+    data = models.JSONField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 

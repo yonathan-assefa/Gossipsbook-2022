@@ -184,6 +184,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# Storage System
+DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+GS_BUCKET_NAME = "BUCKET_NAME"
+STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+
+
 # CHANNEL_LAYERS = {
 #     "default": {
 #         "BACKEND": "channels_redis.core.RedisChannelLayer",
