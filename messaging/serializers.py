@@ -22,13 +22,28 @@ class ChatingRoomMessageListSerializer(ModelSerializer):
         return user_1.username
 
 
+class MessageForRoomSerializer(ModelSerializer):
+
+    class Meta:
+        model = ChatingRoomMessage
+        fields = ["message", ]
+
+
 class ChatingRoomSerializer(ModelSerializer):
     user1 = serializers.StringRelatedField(read_only=True)
     user2 = serializers.StringRelatedField(read_only=True)
-
+    last_message = serializers.SerializerMethodField()
+    
     class Meta:
         model = ChatingRoom
         fields = "__all__"
+
+    def get_last_message(self, serializer):
+        try:
+            obj = serializer.ch_messages.last()
+        except:
+            return None
+        return MessageForRoomSerializer(instace=obj).data
 
 
 class NotificationSerializer(ModelSerializer):

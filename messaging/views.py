@@ -104,8 +104,7 @@ class UserRoomListAPIView(ListAPIView):
 
     def get_chating_room_qs(self):
         user = self.request.user
-        qs = ChatingRoom.objects.none()
-        qs |= user.user1_chating_room.all()
+        qs = user.user1_chating_room.all()
         qs |= user.user2_chating_room.all()
         return qs
 
