@@ -276,9 +276,8 @@ def handle_user_work_experience_object(request, experience_id):
         serializer = serializer_class(instance=obj)
         obj.delete()
         print("DELETED OBJECT")
-        data["experience"] = serializer.data
         data["task"] = "deleted"
-        return Response(data, status.HTTP_204_NO_CONTENT)
+        return Response(data, status.HTTP_200_OK)
 
     data["result"] = serializer_class(obj).data
     return Response(data=data, status=status.HTTP_200_OK)
@@ -352,9 +351,8 @@ def handle_qualification_object(request, qualification_id):
         serializer = serializer_class(instance=obj)
         obj.delete()
         print("DELETED OBJECT")
-        data["qualification"] = serializer.data
         data["task"] = "deleted"
-        return Response(data, status.HTTP_204_NO_CONTENT)
+        return Response(data, status.HTTP_200_OK)
     data["result"] = serializer_class(obj).data
     return Response(data=data, status=status.HTTP_200_OK)
 
