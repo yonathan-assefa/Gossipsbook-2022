@@ -228,7 +228,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 
-SENDGRID_API_KEY = "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"
+SENDGRID_API_KEY = "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"
+# "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"
 # "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"
 # "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"
 SERVER_EMAIL = "gossipsbook.in@gmail.com"
