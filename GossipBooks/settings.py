@@ -96,7 +96,7 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = "GossipBooks.routing.application"
+ASGI_APPLICATION = "GossipBooks.asgi.application"
 WSGI_APPLICATION = 'GossipBooks.wsgi.application'
 
 
@@ -185,32 +185,9 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Storage System
-DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-GS_BUCKET_NAME = "BUCKET_NAME"
-STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
-
-
-# URI = "redis://:pfc3fd3553a9df589d0185c19ffaa6d91f7276543b1c50b87e1c96f76653d80bd@ec2-3-211-45-171.compute-1.amazonaws.com:10220"
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-#         },
-#         "ROUTING": "GossipBooks.routing.application"
-#     }
-# } 
+# DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+# GS_BUCKET_NAME = "BUCKET_NAME"
+# STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 
 
 CHANNEL_LAYERS = {

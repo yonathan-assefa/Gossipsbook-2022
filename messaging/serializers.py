@@ -53,3 +53,10 @@ class NotificationSerializer(ModelSerializer):
         model = Notifications
         fields = "__all__"
 
+
+class NotificationListSerializer(ModelSerializer):
+
+    class Meta:
+        model = Notifications
+        fields = ["id", "message"]
+

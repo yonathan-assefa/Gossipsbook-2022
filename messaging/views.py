@@ -9,7 +9,7 @@ from .models import ChatingRoom, Notifications
 from api.views.GossipViews import get_object_or_rest_404
 from api.serializers.UserSerializers import UserSerializer, UserWithProfileSerializer
 from .serializers import (ChatingRoomMessageListSerializer, NotificationSerializer, 
-                            ChatingRoomSerializer)
+                            ChatingRoomSerializer, NotificationListSerializer)
 import websocket
 
 
@@ -134,7 +134,7 @@ class UserChattingRoomAPIView(ListAPIView):
 
 
 class NotificationsListAPIView(ListAPIView):
-    serializer_class = NotificationSerializer
+    serializer_class = NotificationListSerializer
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):

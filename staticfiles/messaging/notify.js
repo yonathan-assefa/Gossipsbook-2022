@@ -11,7 +11,7 @@ function listenToSocket(){
          ws = "wss:"
     };
 
-    var url = `${ws}//${loc.host}/notifications/`;
+    var url = `${ws}//${loc.host}/nots/`;
     console.log(url);
 
     var socket = new WebSocket(url);
