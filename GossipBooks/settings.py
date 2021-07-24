@@ -216,7 +216,7 @@ DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = "gossipsbook_bucket"
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 FILE_NAME = "gossipsbook-website-project-1eb1e8ba4391.json"
-GOOGLE_APPLICATION_CREDENTIALS = Credentials.from_service_account_file(FILE_NAME)
+GS_CREDENTIALS = Credentials.from_service_account_file(FILE_NAME)
 GS_PROJECT_ID = "gossipsbook-website-project"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_dir')
@@ -227,7 +227,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "staticfiles")
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media')
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
