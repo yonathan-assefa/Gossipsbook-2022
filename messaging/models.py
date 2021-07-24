@@ -115,7 +115,7 @@ class Notifications(models.Model):
     slug = models.SlugField()
     url = models.CharField(max_length=2040, blank=True, null=True)
     seen = models.BooleanField(default=False)
-    notification_type = models.CharField(max_length=2, choices=NOTIFICATION_CATEGORY)
+    notification_type = models.CharField(max_length=2, choices=NOTIFICATION_CATEGORY, blank=True, null=True)
     data = models.JSONField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)

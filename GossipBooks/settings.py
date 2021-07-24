@@ -173,13 +173,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# Storage System
-
-# DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-# GS_BUCKET_NAME = "BUCKET_NAME"
-# STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-# GOOGLE_APPLICATION_CREDENTIALS = Credentials.from_service_account_file("credentials.json")
-
 
 CHANNEL_LAYERS = {
     "default": {
@@ -216,6 +209,15 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Storage System
+
+DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+GS_BUCKET_NAME = "gossipsbook_bucket"
+STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+FILE_NAME = "gossipsbook-website-project-1eb1e8ba4391.json"
+GOOGLE_APPLICATION_CREDENTIALS = Credentials.from_service_account_file(FILE_NAME)
+GS_PROJECT_ID = "gossipsbook-website-project"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_dir')
 

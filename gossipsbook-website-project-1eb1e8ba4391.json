@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "gossipsbook-website-project",
+  "private_key_id": "1eb1e8ba4391fdba4acd1762540c335cf6d77fc5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC4HmIUg7/JW0wN\n6cYP3aMDLsfPLA9i7hVkr1z328VitUfVHAsGieNXaUqP/QoaKclN18Nn3+cUpWKx\nvbOV09P7LpNL1eSV3a80upiL3xU4MBiQC8WO0et4RF9fBX1v2xtvQEkCC0+883Zv\nezqznJf7LAwGe+k5YS9Qa5uPgPWGHMU0uQr1HWNE8kard9Lmy665uWMP7E/ummBK\n2LNUO41unYYEYHaNrrG5IEUMZL3wuvW8SwtCNhCWIRKZs/GYPjyq5MzHaeeUdQjR\noh9Oq0ijCwHCkKChbprI8r2B5BBHaDZfM0DLXBtENNAj2q9GSkFXs9Lq8l5hnbSl\n/dnnXZnDAgMBAAECggEADGb98MEGZgtNVNHLf32zIZLA70NziEfejwxOm3xlXNNp\nrE3mr23eySBhkmnXVV3W0cFX+1ZJjzCsAXcODGin3dw/gps84GkXbtpztInpa87p\nlXWfI18gMnDAnK3Jyxzor/zJLjPe28aDbHNrlKlWuRrSQ7/zCbEMA9z++vkTEN6G\nWDblokldqCsxt6c8yxBvvvsUq525kaY05UdUb3HhWIsWtRxJ6Ipc865LNr8XWW7s\njCvy5rGLehH6FdHfXYZCERa3JmmKR8Fpg2lpW78D/Mh4Yy97mrSU8bVCeHj4TQ1g\nO23F6oMEyz9Zut/PPkClac/pBcc++bW25b/rqBDSSQKBgQDocT6ILYACvk/ChQYt\ndVuHf+hWXapuY46TGfHiQ9nmQXuG5SsjNLsrhw30JzDELObhVGqBO+V6wxhNNe1d\nVEKvc5+6gMVVzPkpBtZNR6wr0c3L+uzjxPRpFXi3xVxrV4GWvzhkJcgbONmGtDYo\ntUJPnnJxxpsgTFUKrBTN7IzaDwKBgQDKx19/IJr01PDU6kDoxkZdj5fMq5+ml7Zf\n7x3yRSsV5l9D5bq8IfMxsN5XJO1iqRpIZL12g7tJlzKbcL6cvmiSfALwIs/QBP5h\nkjD3nla6D7yaV4HZbXClbl1ai0hs/88HT0gVcsKPPVLPY+LMqRdpd+fgaXXOPFoV\nZF3BgrQJDQKBgCcrjkIciMntkDtTd2sJr9bxsxF6z1Gy7T/Uy3I5xOqMdmiRDefs\n5u264JsYT5t/hZjLRPdqRI2feuToBYwIuwQeE/i14otG82X6hPqY7WalAG0zZ+Aq\nPJXIzIMLezuLj4b7ymD2DPapad7NV6MciIQqS1bpBRM4Scx2mzrodgP5AoGBALpu\nv3AELDN5K8q1bOQWl08h2/DCwc/KoFRnZeL+kPRbj66/IgYiOJOxB1qbit0wmAeD\nB2ZVCvZH2rFq4PT/Yul6tsDNYL7iOHbAj+C5ZQc/vKkyVyHuKqkOZSn/8KC2OEOC\nMsX1csd7HA2syjJcLDg9k6SRkUwB1NjiJAjsAFZpAoGAWjx14K5XHBgmQsUGvcdQ\nA0kNZmUuixytBu8imevdq8sGL3hyJYszQXiXBZ7E7gFTDRVH30FwRo+2DubfuzqL\nHt6pFo6R9yQ6KRdxHQ0+Q9HE1t4KNIocGmgdIopAeJU+n5dmSAMonPLqKy/if9N6\n8O425+yD4eKSGECRp9PwZdk=\n-----END PRIVATE KEY-----\n",
+  "client_email": "gossips-book-service-account@gossipsbook-website-project.iam.gserviceaccount.com",
+  "client_id": "106132653963661072144",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gossips-book-service-account%40gossipsbook-website-project.iam.gserviceaccount.com"
+}
