@@ -228,20 +228,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 
-SENDGRID_API_KEY = "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"
-# "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"
-# "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"
-# "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"
-SERVER_EMAIL = "gossipsbook.in@gmail.com"
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = 'apikey'
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_API_KEY = "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"
+DEFAULT_FROM_EMAIL = "gossipsbook.in@gmail.com"
 
 LANGUAGE_CODE = 'en-us'
 
