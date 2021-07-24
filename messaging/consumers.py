@@ -103,11 +103,18 @@ class ChatMessageConsumer(AsyncConsumer):
 class NotificationConsumer(AsyncConsumer):
 
     async def websocket_connect(self, event):
+        print("CONNTECTED -> ", event)
         await self.send({
             "type": "websocket.accept"
         })
 
-        print("CONNTECTED -> ", event)
+        user = self.scope["user"]
+        chat_room = f"notification_room_{user.username}"
+        self.chat_room = chat_room
+        await self.channel_layer.group_add(
+            chat_room,
+            self.channel_name
+        )
         
         # if not user.is_authenticated:
         #     await self.send({
@@ -115,15 +122,6 @@ class NotificationConsumer(AsyncConsumer):
         #     })
         #     return 
 
-
-
-        # chat_room = f"notification_room_{user.username}"
-        # self.chat_room = chat_room
-        # print(chat_room)
-        # await self.channel_layer.group_add(
-        #     chat_room,
-        #     self.channel_name
-        # )
 
     async def websocket_receive(self, event):
         print("RECEIVED -> ", event)

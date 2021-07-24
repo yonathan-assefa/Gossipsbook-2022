@@ -1,5 +1,8 @@
 import os
+import pathlib
 import environ
+from google.oauth2 import service_account
+from google.oauth2.service_account import Credentials
 
 env = environ.Env()
 environ.Env.read_env()
@@ -67,15 +70,13 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'GossipBooks.urls'
@@ -98,17 +99,6 @@ TEMPLATES = [
 
 ASGI_APPLICATION = "GossipBooks.asgi.application"
 WSGI_APPLICATION = 'GossipBooks.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
 # DATABASES = {
 #     'default': {
@@ -168,7 +158,6 @@ SITE_ID = 1
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/welcome'
 
-# Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         # For each OAuth based provider, either add a ``SocialApp``
@@ -185,9 +174,11 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Storage System
+
 # DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 # GS_BUCKET_NAME = "BUCKET_NAME"
 # STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+# GOOGLE_APPLICATION_CREDENTIALS = Credentials.from_service_account_file("credentials.json")
 
 
 CHANNEL_LAYERS = {
