@@ -21,7 +21,7 @@ urlpatterns = [
     path('', include('controls.urls', namespace='controls')),
     # path("room/<username>/", conntect_websocket, name="Websocket_name"),
     path("notifications/room/", connect_notification_websocket),
-]
+ ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
