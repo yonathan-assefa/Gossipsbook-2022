@@ -1,7 +1,6 @@
 import os
 import environ
-import re
-import aioredis
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -167,10 +166,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 2
 }
 
-# ACCOUNT_FORMS = {
-#     "reset_password": "django.contrib.auth.forms.PasswordResetForm"
-# }
-
 SITE_ID = 1
 
 LOGIN_URL = '/accounts/login'
@@ -190,9 +185,6 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         }
     },
-    "facebook": {
-
-    }
 }
 
 # Storage System
@@ -214,14 +206,13 @@ CHANNEL_LAYERS = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
-
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = "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" 
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = "" # "yab95assefa@gmail.com"
+DEFAULT_FROM_EMAIL = "" 
 
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 SENDGRID_ECHO_TO_STDOUT = True
