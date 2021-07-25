@@ -101,6 +101,13 @@ class StatusListCreateSerializer(ModelSerializer):
         model = Status
         fields = "__all__"
 
+    def validate(self, values):
+        text = values["text"]
+        image = values["image"]
+        if (not image) and (not text):
+            raise serializers.ValidationError("Both Text and Image Cannot be Null...")
+
+        return values
 
 class StatusImageSerializer(ModelSerializer):
 

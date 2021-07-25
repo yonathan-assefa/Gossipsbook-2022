@@ -162,6 +162,32 @@ class GossipsForCircleListAPIView(ListAPIView):
         return qs
     
 
+
+class CurrentUserStatusFeed(ListAPIView):
+    serializer_class = CircleSerializers.StatusListCreateSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        qs = Status.objects.none()
+        friend_users = self.get_all_friends()
+        for user in friend_users:
+            qs |= user.user_status.all()
+
+        return qs
+
+    def get_all_friends(self):
+        user = self.request.user
+        qs = user.user1_frnds.all()
+        lst = []
+        for i in qs:
+            lst.append(i.user2) 
+        qs = user.user2_frnds.all()   
+        for i in qs:
+            lst.append(i.user1) 
+
+        return lst
+
+
 class StatusListCreateAPIView(ListCreateAPIView):
     serializer_class = CircleSerializers.StatusListCreateSerializer
     permission_classes = [IsAuthenticated, ]

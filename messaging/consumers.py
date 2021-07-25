@@ -99,7 +99,6 @@ class ChatMessageConsumer(AsyncConsumer):
         return obj
 
 
-
 class NotificationConsumer(AsyncConsumer):
 
     async def websocket_connect(self, event):
@@ -109,19 +108,20 @@ class NotificationConsumer(AsyncConsumer):
         })
 
         user = self.scope["user"]
+
+        if not user.is_authenticated:
+            await self.send({
+                "type": "websocket.disconnect"
+            })
+            return 
+    
         chat_room = f"notification_room_{user.username}"
+
         self.chat_room = chat_room
         await self.channel_layer.group_add(
             chat_room,
             self.channel_name
         )
-        
-        # if not user.is_authenticated:
-        #     await self.send({
-        #         "type": "websocket.disconnect"
-        #     })
-        #     return 
-
 
     async def websocket_receive(self, event):
         print("RECEIVED -> ", event)
@@ -147,14 +147,8 @@ class NotificationConsumer(AsyncConsumer):
         print("DIS-CONNTECTED -> ", event)
 
 
-
-
-
-
-
-
 class NotificationTypeConsumer(AsyncConsumer):
-
+    """This was only made For Testing Purpose"""
     async def websocket_connect(self, event):
         await self.send({
             "type": "websocket.accept"

@@ -59,6 +59,7 @@ urlpatterns = [
     path("current-user/circle/gossips/list-create/", CircleViews.GossipsForCircleListCreateAPIView.as_view(), ),
 
     path("status/list-create/", CircleViews.StatusListCreateAPIView.as_view()),
+    path("current-user/status/feed/", CircleViews.CurrentUserStatusFeed.as_view(), ),
     path("status/update/<status_slug>/", CircleViews.StatusUpdateAPIView.as_view(), ),
 
     path("room/<username>/", RoomMessagesListAPIView.as_view(), ),
