@@ -103,15 +103,8 @@ class GossipsModel(models.Model):
         if (not author) and (not circle):
             raise Http404
 
-        super().save( *args, **kwargs)
+        return super().save( *args, **kwargs)
     
-        if self.image:
-            img = Image.open(self.image.path)
-            if img.height > 500 or img.width > 1000:
-                output = (500, 1200)
-                img.thumbnail(output)
-                img.save(self.image.path)
-
     class Meta:
         verbose_name_plural = 'Gossips'
         
@@ -149,6 +142,7 @@ class GossipObjection(models.Model):
 
     def __str__(self):
         return f"{self.user} objected {self.gossipsmodel.title}"
+
 
 # signal that creates and saves gossips slug upon creation of a gossip
 def save_gossip_slug(sender, instance, *args, **kwargs):
