@@ -55,6 +55,10 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_rest_passwordreset',
 
+    'sendgrid_backend',
+
+
+
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -152,7 +156,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 2
 }
 
-
 SITE_ID = 1
 
 LOGIN_URL = '/accounts/login'
@@ -170,51 +173,38 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {
             'access_type': 'online',
         }
-    }
+    },
 }
 
-
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels.layers.InMemoryChannelLayer"  # Good for testing and local server purposes
-#     }
-# }
 
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-             "hosts": ["redis://:pfc3fd3553a9df589d0185c19ffaa6d91f7276543b1c50b87e1c96f76653d80bd@ec2-54-205-101-169.compute-1.amazonaws.com:11430"],
+            "hosts": ["redis://:pfc3fd3553a9df589d0185c19ffaa6d91f7276543b1c50b87e1c96f76653d80bd@ec2-54-205-101-169.compute-1.amazonaws.com:11429/0"],
         },
     },
 }
 
-# EMAIL_HOST = 'smtp.google.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-
-# EMAIL_HOST_USER = 'gossipsbook.in@gmail.com'
-# EMAIL_HOST_PASSWORD = "fmemsarqssvhjnds" #This is the generated password for your Gmail app. Only for backend auth purposes,
-# # EMAIL_HOST_PASSWORD = "Ammananna@1991"
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-
-# EMAIL_USE_TLS = True
-
-
-
-PASS = "Ammananna@071991"
-USN = "GossipBooks"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = "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" 
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = "" 
 
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = "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"
-DEFAULT_FROM_EMAIL = "gossipsbook.in@gmail.com"
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_ECHO_TO_STDOUT = True
+
+ADMINS = (
+    ('abnos', 'wendiradame@gmail.com'),
+)
+
 
 LANGUAGE_CODE = 'en-us'
 
