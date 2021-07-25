@@ -10,7 +10,7 @@ SECRET_KEY = 'f=bwtq3+p4c5i*g6d82lj9+qb5r#b*if-kt^k3%$@#1nt&_kjl'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['gossipsbook.herokuapp.com', '127.0.0.1', 'localhost', 'gossipsbook.com', 'www.gossipsbook.com', "192.168.0.198"]
+ALLOWED_HOSTS = ['gossipsbook.herokuapp.com', '127.0.0.1', 'localhost', 'gossipsbook.com', 'www.gossipsbook.com']
 
 INSTALLED_APPS = [
     'channels',
