@@ -9,7 +9,7 @@ environ.Env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'f=bwtq3+p4c5i*g6d82lj9+qb5r#b*if-kt^k3%$@#1nt&_kjl'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = True
 
@@ -116,11 +116,11 @@ WSGI_APPLICATION = 'GossipBooks.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd54m80rajacatb',
+        'NAME': os.environ.get("DATABASE_NAME"),
         'HOST': 'ec2-54-242-43-231.compute-1.amazonaws.com',
         'PORT': 5432,
-        'USER': 'cejupgskzndxgd',
-        'PASSWORD': 'a619617fbad02bc074c5c623f1bb819689e68f1b730c7f158c7da5bc3575bf00'
+        'USER': os.environ.get("DATABASE_USER"),
+        'PASSWORD': os.environ.get("DATABASE_PASSWORD")
     }
 }
 
@@ -185,7 +185,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-             "hosts": ["redis://:pfc3fd3553a9df589d0185c19ffaa6d91f7276543b1c50b87e1c96f76653d80bd@ec2-54-205-101-169.compute-1.amazonaws.com:11430"],
+             "hosts": [os.environ.get("REDIS_URL")],
         },
     },
 }
@@ -206,15 +206,15 @@ CHANNEL_LAYERS = {
 
 
 
-PASS = "Ammananna@071991"
-USN = "GossipBooks"
+# PASS = "Ammananna@071991"
+# USN = "GossipBooks"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = "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"
-DEFAULT_FROM_EMAIL = "gossipsbook.in@gmail.com"
+# EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+# SENDGRID_API_KEY = "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"
+# DEFAULT_FROM_EMAIL = "gossipsbook.in@gmail.com"
 
 LANGUAGE_CODE = 'en-us'
 
