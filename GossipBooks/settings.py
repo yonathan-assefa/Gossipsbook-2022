@@ -158,11 +158,12 @@ SITE_ID = 1
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/welcome'
 
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")  # Gossips Book API KEY
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
         'SCOPE': [
             'profile',
             'email',
@@ -180,6 +181,7 @@ SOCIALACCOUNT_PROVIDERS = {
 #     }
 # }
 
+# Channel Layers For Django Channels
 
 CHANNEL_LAYERS = {
     "default": {
@@ -210,12 +212,6 @@ CHANNEL_LAYERS = {
 # USN = "GossipBooks"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-
-
-# EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-# SENDGRID_API_KEY = "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"
-# DEFAULT_FROM_EMAIL = "gossipsbook.in@gmail.com"
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -225,8 +221,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-# Storage System
 
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = "gossipsbook_bucket"
