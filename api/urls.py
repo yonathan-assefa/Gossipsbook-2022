@@ -50,7 +50,7 @@ urlpatterns = [
     path("current-user/friend-request/list/", UserViews.FriendRequestListAPIView.as_view(), ),
     path("current-user/friend-request/create/<username>/", UserViews.FriendRequestCreateAPIView.as_view(), ),
     path("current-user/friend-request/list/update/<username>/", UserViews.FriendRequestUpdateAPIView.as_view(), ),
-    
+    path("user/friend-suggestion/", UserViews.FriendSuggestionListAPIView.as_view(), ),
     path("interest/list/", UserViews.InterestListAPIView.as_view(), ),
 
     path("circle/list-create/", CircleViews.CircleListCreateAPIView.as_view(), name="Circle-List"),

@@ -170,6 +170,7 @@ class CurrentUserStatusFeed(ListAPIView):
     def get_queryset(self):
         qs = Status.objects.none()
         friend_users = self.get_all_friends()
+        print("Friends ", friend_users)
         for user in friend_users:
             qs |= user.user_status.all()
 
@@ -211,7 +212,7 @@ class StatusListCreateAPIView(ListCreateAPIView):
             else:
                 raise ValidationError("Invalid Argument to the Parameter `Created by` Provided...")
         if not qs.exists():
-            qs = user.user_status.all()
+            qs = Status.objects.all()
         return qs
 
     def perform_create(self, serializer):

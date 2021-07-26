@@ -662,3 +662,11 @@ class FriendRequestUpdateAPIView(RetrieveUpdateDestroyAPIView):
 
             raise PermissionDenied("request can have arguments of [`accepted`, `rejected`]...")
         raise PermissionDenied("No query parameter of request is provided...")
+
+
+class FriendSuggestionListAPIView(ListAPIView):
+    serializer_class = UserSerializers.UserSerializer
+
+    def get_queryset(self):
+        return User.objects.all()[:10]
+
