@@ -100,18 +100,7 @@ TEMPLATES = [
 ASGI_APPLICATION = "GossipBooks.asgi.application"
 WSGI_APPLICATION = 'GossipBooks.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'd9t0iccvmsl35s',
-#         'HOST': 'ec2-23-20-205-19.compute-1.amazonaws.com',
-#         'PORT': 5432,
-#         'USER': 'wnducfffnqafij',
-#         'PASSWORD': '97dc744a5b901e34228171b4955eddb4e4417497c96c77cf7792f7208a9220cc'
-#     }
-# }
 
-# postgres://cejupgskzndxgd:a619617fbad02bc074c5c623f1bb819689e68f1b730c7f158c7da5bc3575bf00@ec2-54-242-43-231.compute-1.amazonaws.com:5432/d54m80rajacatb
 
 DATABASES = {
     'default': {
@@ -192,24 +181,7 @@ CHANNEL_LAYERS = {
     },
 }
 
-# EMAIL_HOST = 'smtp.google.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
 
-# EMAIL_HOST_USER = 'gossipsbook.in@gmail.com'
-# EMAIL_HOST_PASSWORD = "fmemsarqssvhjnds" #This is the generated password for your Gmail app. Only for backend auth purposes,
-# # EMAIL_HOST_PASSWORD = "Ammananna@1991"
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-
-# EMAIL_USE_TLS = True
-
-
-
-# PASS = "Ammananna@071991"
-# USN = "GossipBooks"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LANGUAGE_CODE = 'en-us'
