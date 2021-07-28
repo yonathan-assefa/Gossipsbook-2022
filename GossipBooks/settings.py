@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['gossipsbook.herokuapp.com', '127.0.0.1', 'localhost', 'gossipsbook.com', 'www.gossipsbook.com']
 
@@ -206,10 +206,6 @@ CHANNEL_LAYERS = {
 
 # EMAIL_USE_TLS = True
 
-
-
-# PASS = "Ammananna@071991"
-# USN = "GossipBooks"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LANGUAGE_CODE = 'en-us'
@@ -241,3 +237,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media')
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST=True
+USE_X_FORWARDED_PORT=True
+SECURE_HSTS_SECONDS=3600
+SECURE_HSTS_PRELOAD=True
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_SSL_REDIRECT=True
+SECURE_REFERRER_POLICY=strict-origin
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
