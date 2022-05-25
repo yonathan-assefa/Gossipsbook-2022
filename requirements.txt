@@ -75,7 +75,7 @@ pygame==2.0.1
 PyGetWindow==0.0.9
 PyHamcrest==2.0.2
 pyjsparser==2.7.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pylint==2.8.3
 PyMsgBox==1.0.9
 pyOpenSSL==20.0.1
