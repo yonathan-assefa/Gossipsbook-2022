@@ -21,7 +21,7 @@ cryptography==3.4.7
 daphne==3.0.2
 defusedxml==0.7.1
 distlib==0.3.2
-Django==3.2.4
+Django==3.2.14
 django-allauth==0.44.0
 django-ckeditor==6.1.0
 django-countries==7.2.1
